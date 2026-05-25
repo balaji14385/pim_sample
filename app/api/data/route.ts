@@ -1,10 +1,10 @@
 import { db } from "@/db/index";
-import { details } from "@/db/schema";
+import { details,manufacturers,brands} from "@/db/schema";
 import { NextResponse,NextRequest } from "next/server";
 export async function GET(req:NextRequest){
    try {
      let data=await db.select()
-    .from(details)
+    .from(brands)
     return NextResponse.json({
         'status':true,
         data
