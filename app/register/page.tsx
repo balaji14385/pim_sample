@@ -181,16 +181,20 @@ const RegistrationForm = () => {
      console.log(form)
       try {
 
-        const res =await axios.post('/api/register',form)
-          
-        const data =res.data
-
-        console.log(data);
-
-        alert(
+       let res=await fetch('/api/register',{
+        'method':'post',
+        'headers':{
+          'Content-Type':'application/json'
+        },
+        'body':JSON.stringify(form)
+       })
+       let data=await res.json()
+       console.log(data)
+       if(data.status==true)
+       {
+         alert(
           "Registration Successful"
         );
-
         setForm({
           name: "",
           age: "",
@@ -201,9 +205,12 @@ const RegistrationForm = () => {
           gender: "",
           terms: false,
         });
+       }
+
+        
 
       }
-      catch(error){
+      catch(error:any){
         console.log(error);
       }
     }

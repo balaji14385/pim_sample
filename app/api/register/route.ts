@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {db} from '@/db/index';
-import { users } from "@/db/schema";
+import { details } from "@/db/schema";
+import { eq } from "drizzle-orm";
 interface FormData {
   name: string;
   age: number;
@@ -15,7 +16,19 @@ interface FormData {
 export async function POST(req: NextRequest) {
   try {
     const data: FormData =await req.json();
-    console.log(data)
+     const existingUser = await db.select()
+        .from(details)
+        .where(eq(details.email, data.email));
+      console.log(existingUser.length)
+    if (existingUser.length > 0) {
+      return NextResponse.json(
+        {
+          status:false,
+          message:"Email already exists"
+        },
+        { status:400 }
+      );
+    }
   const userData = {
       name: data.name,
       age: Number(data.age),
@@ -25,10 +38,10 @@ export async function POST(req: NextRequest) {
       gender: data.gender,
       terms: data.terms
     }; 
- await db.insert(users).values(userData)
+ await db.insert(details).values(userData)
     return NextResponse.json(      {
-        'status': true,
-        'message':'successfully inserted the data',
+        status: true,
+        message:'successfully inserted the data',
         data,
         
       },
@@ -38,7 +51,7 @@ export async function POST(req: NextRequest) {
     );
 
   } 
-  catch (error: any) {
+  catch (error:any) {
     console.log(error);
     return NextResponse.json(
       {
