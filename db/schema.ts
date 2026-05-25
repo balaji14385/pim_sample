@@ -1,6 +1,6 @@
 import { pgTable,varchar,integer,serial,boolean,timestamp } from "drizzle-orm/pg-core";
 console.log('schema')
-export const users=pgTable("users",{
+export const details=pgTable("details",{
     id:serial('id').primaryKey(),
   
   name: varchar("name", {

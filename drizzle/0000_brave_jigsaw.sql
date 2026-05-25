@@ -1,4 +1,4 @@
-CREATE TABLE "users" (
+CREATE TABLE "details" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar(100) NOT NULL,
 	"age" integer NOT NULL,
@@ -8,5 +8,5 @@ CREATE TABLE "users" (
 	"gender" varchar(20) NOT NULL,
 	"terms" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "users_email_unique" UNIQUE("email")
+	CONSTRAINT "details_email_unique" UNIQUE("email")
 );
