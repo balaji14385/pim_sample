@@ -12,6 +12,7 @@ interface FormData {
   terms: boolean;
 }
 
+
 export async function POST(req: NextRequest) {
   try {
     const data: FormData =await req.json();
