@@ -1,18 +1,16 @@
 import { NextRequest,NextResponse } from "next/server";
 import { db } from "@/db/index";
-import { brands } from "@/db/schema";
+import { manufacturers } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
-export async function POST(req:NextRequest) {
+
+export async function GET(req:NextRequest) {
     try {
-        let data=await req.json()
-        let finaldata={...data,tenantId: "11111111-0001-0001-0001-000000000001"
-}
-        await db.insert(brands).values(
-            finaldata
-        )
+        let data=await db.select({company_name:manufacturers.companyName}).from(manufacturers)       
         return NextResponse.json({
             status:true,
-            message:"successfully inserted"
+            message:"successfully fetch the data",
+            data
         },{status:200})
     } catch (error:unknown) {
         console.log(error)

@@ -26,7 +26,7 @@ if(!brandExists){
             finaldata
         )
         return NextResponse.json({
-            status:false,
+            status:true,
             message:"successfully inserted"
         },{status:200})
     } catch (error:unknown) {
