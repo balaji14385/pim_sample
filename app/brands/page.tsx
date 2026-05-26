@@ -1,25 +1,23 @@
 "use client"
-import { useState, useRef,useEffect, ChangeEvent, FocusEvent, DragEvent } from "react";
+import { useState,useEffect, useRef, ChangeEvent, FocusEvent, DragEvent } from "react";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
 interface FormValues {
-  brandName: string;
+ name: string;
   brandCode:string;
   brandType: string;
-  manufacturer: string;
+  manufacturerId: string;
   parentBrand: string;
-  segment: string;
   country: string;
   description: string;
 }
 
 interface FormErrors {
-  brandName?: string;
+ name?: string;
   brandCode?:string;
   brandType?: string;
-  manufacturer?: string;
-  segment?: string;
+  manufacturerId?: string;
   description?: string;
   logo?: string;
 }
@@ -70,18 +68,6 @@ const PARENT_BRANDS = [
   { value: "head_shoulders",  label: "Head & Shoulders" },
 ];
 
-const SEGMENTS = [
-  { value: "personal_care",    label: "Personal Care" },
-  { value: "home_care",        label: "Home Care" },
-  { value: "food_nutrition",   label: "Food & Nutrition" },
-  { value: "baby_child",       label: "Baby & Child Care" },
-  { value: "health_wellness",  label: "Health & Wellness" },
-  { value: "premium_luxury",   label: "Premium / Luxury" },
-  { value: "mass_market",      label: "Mass Market" },
-  { value: "ayurvedic",        label: "Ayurvedic / Herbal" },
-  { value: "professional",     label: "Professional / Salon" },
-  { value: "other",            label: "Other" },
-];
 
 const COUNTRIES = [
   { value: "IN", label: "India" },
@@ -103,12 +89,11 @@ const MAX_LOGO_SIZE_MB = 2;
 // ─── INITIAL STATE ────────────────────────────────────────────────────────────
 
 const INITIAL_VALUES: FormValues = {
-  brandName: "",
+ name: "",
   brandCode:"",
   brandType: "",
-  manufacturer: "",
+  manufacturerId: "",
   parentBrand: "none",
-  segment: "",
   country: "IN",
   description: "",
 };
@@ -119,7 +104,7 @@ function validateField(field: FieldName | "logo", value: string, logoFile?: File
   const v = value.trim();
 
   switch (field) {
-    case "brandName":
+    case "name":
       if (!v) return "Brand name is required.";
       if (v.length < 2) return "Must be at least 2 characters.";
       if (v.length > 100) return "Must be 100 characters or fewer.";
@@ -135,12 +120,8 @@ function validateField(field: FieldName | "logo", value: string, logoFile?: File
     case "brandType":
       return v ? "" : "Brand type is required.";
 
-    case "manufacturer":
+    case "manufacturerId":
       return v ? "" : "Manufacturer is required.";
-
-    case "segment":
-      return v ? "" : "Segment is required.";
-
     case "description":
       if (!v) return "";
       if (v.length > 500) return "Must be 500 characters or fewer.";
@@ -161,11 +142,10 @@ function validateField(field: FieldName | "logo", value: string, logoFile?: File
 
 function validateAll(values: FormValues, logoFile: File | null): FormErrors {
   return {
-    brandName:    validateField("brandName",    values.brandName),
+   name:    validateField("name",    values.name),
     brandCode:    validateField("brandCode",    values.brandCode),
     brandType:    validateField("brandType",    values.brandType),
-    manufacturer: validateField("manufacturer", values.manufacturer),
-    segment:      validateField("segment",      values.segment),
+    manufacturerId: validateField("manufacturerId", values.manufacturerId),
     description:  validateField("description",  values.description),
     logo:         validateField("logo",         "", logoFile),
   };
@@ -179,11 +159,10 @@ function hasErrors(errors: FormErrors): boolean {
 
 function calcProgress(values: FormValues, logoFile: File | null): number {
   let score = 0;
-  if (values.brandName.trim() && !validateField("brandName", values.brandName)) score += 25;
+  if (values.name.trim() && !validateField("name", values.name)) score += 25;
   if (values.brandCode.trim() && !validateField("brandCode",values.brandCode))  score += 25;
   if (values.brandType)    score += 25;
-  if (values.manufacturer) score += 25;
-  if (values.segment)      score += 15;
+  if (values.manufacturerId) score += 25;
   if (values.description.trim() && !validateField("description", values.description)) score += 5;
   if (logoFile && !validateField("logo", "", logoFile)) score += 5;
   return Math.min(100, score);
@@ -402,20 +381,17 @@ export default function AddBrandPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [toast, setToast] = useState<{ title: string; subtitle: string } | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
-  const [brandList,setBrandList]=useState([])
+  const fileInputRef = useRef<HTMLInputElement>(null);
+const [brandList,setBrandList]=useState([])
   useEffect(()=>{
      async function blist(){
-       let data= await fetch('/api/brandsList')
+       let data= await fetch('/api/manufacturerList')
        let finalData=await data.json()
-       let array=[]
-        finalData.data.map((e)=>array.push(e.company_name))
-        setBrandList(array)
+        setBrandList(finalData.data)
              }
      blist()
   },[]);  
   
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const progress = calcProgress(values, logoFile);
 
   // ── Field state helper ────────────────────────────────────────────────────
@@ -489,8 +465,8 @@ export default function AddBrandPage() {
 
   const handleSubmit = async () => {
     const allTouched = {
-      brandName: true,brandCode: true, brandType: true, manufacturer: true,
-      parentBrand: true, segment: true, country: true, description: true, logo: true,
+     name: true,brandCode: true, brandType: true, manufacturerId: true,
+      parentBrand: true,  country: true, description: true, logo: true,
     };
     setTouched(allTouched);
     const newErrors = validateAll(values, logoFile);
@@ -503,8 +479,22 @@ export default function AddBrandPage() {
     setLoading(true);
     await new Promise<void>((r) => setTimeout(r, 1500));
     setLoading(false);
-    showToast("Brand saved!", `"${values.brandName.trim()}" has been added to your catalog.`);
-    handleReset();
+    console.log(values)
+          let res=await fetch('/api/brands',{
+        'method':'post',
+        'headers':{
+            'Content-Type':'application/json',
+
+        },
+        'body':JSON.stringify(values)
+       })
+       let data=await res.json()
+      if(data.status==true)
+      {
+         showToast("Brand saved!", `"${values.name.trim()}" has been added to your catalog.`);
+         handleReset();
+      }
+   
   };
 
   const handleReset = () => {
@@ -524,16 +514,19 @@ export default function AddBrandPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
 
-      {/* ── TOP BAR ───────────────────────────────────────────────────── */}
-      
       {/* ── MAIN ──────────────────────────────────────────────────────── */}
       <main className="flex-1 max-w-[680px] mx-auto w-full px-5 pt-7 pb-20">
 
-        {/* Breadcrumb */}
-        
-
         {/* Page header */}
-        
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <h1 className="text-[21px] font-semibold text-slate-800 tracking-tight leading-tight">Add brand</h1>
+            <p className="mt-1 text-[12.5px] text-slate-500">Register a new brand and associate it with a manufacturer</p>
+          </div>
+          <p className="text-[11.5px] text-slate-400 flex items-center gap-1 mt-1 flex-shrink-0">
+            <span className="text-red-500 text-[13px] leading-none">*</span> Required
+          </p>
+        </div>
 
         {/* Progress bar */}
         <div className="h-[3px] bg-slate-200 rounded-full mb-5 overflow-hidden" title={`${progress}% complete`}>
@@ -553,24 +546,24 @@ export default function AddBrandPage() {
 
             {/* ── Brand Name ──────────────────────────────────────────── */}
             <div className="flex flex-col gap-1.5">
-              <FieldLabel htmlFor="brandName" required>Brand name</FieldLabel>
+              <FieldLabel htmlFor="name" required>Brand name</FieldLabel>
               <div className="relative">
                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><TagIcon /></span>
                 <input
                   type="text"
-                  id="brandName"
+                  id="name"
                   placeholder="e.g. Dove, Lakmé, Head & Shoulders"
-                  value={values.brandName}
-                  onChange={handleChange("brandName")}
-                  onBlur={handleBlur("brandName")}
-                  className={inputCls(fieldState("brandName"))}
+                  value={values.name}
+                  onChange={handleChange("name")}
+                  onBlur={handleBlur("name")}
+                  className={inputCls(fieldState("name"))}
                   maxLength={100}
                   autoComplete="off"
                   spellCheck={false}
                 />
-                <CheckIcon show={fieldState("brandName") === "ok"} />
+                <CheckIcon show={fieldState("name") === "ok"} />
               </div>
-              <FieldError message={touched.brandName ? errors.brandName : undefined} />
+              <FieldError message={touched.name ? errors.name : undefined} />
             </div>
 
             {/* ── Brand Code ──────────────────────────────────────────── */}
@@ -615,17 +608,18 @@ export default function AddBrandPage() {
                 <FieldLabel htmlFor="manufacturer" required>Manufacturer</FieldLabel>
                 <div className="relative">
                   <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><BuildingIcon /></span>
-                  <SelectField id="manufacturer" value={values.manufacturer} onChange={handleChange("manufacturer")} onBlur={handleBlur("manufacturer")} state={fieldState("manufacturer")} placeholder="Select manufacturer…">
-{ brandList && 
+                  <SelectField id="manufacturer" value={values.manufacturerId} onChange={handleChange("manufacturerId")} onBlur={handleBlur("manufacturerId")} state={fieldState("manufacturerId")} placeholder="Select manufacturer…">
+                     { brandList && 
    brandList.map((e)=>{
 
-    return <option key={e} value={e}>{e}</option>
+    return <option key={e.id} value={e.id}>{e.company_name}</option>
    })
- 
-}                  </SelectField>
-                  <CheckIcon show={fieldState("manufacturer") === "ok"} />
+}
+
+                  </SelectField>
+                  <CheckIcon show={fieldState("manufacturerId") === "ok"} />
                 </div>
-                <FieldError message={touched.manufacturer ? errors.manufacturer : undefined} />
+                <FieldError message={touched.manufacturerId ? errors.manufacturerId : undefined} />
               </div>
             </div>
 
@@ -641,31 +635,19 @@ export default function AddBrandPage() {
                   </SelectField>
                 </div>
               </div>
-
-              {/* Segment */}
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel htmlFor="segment" required>Segment</FieldLabel>
-                <div className="relative">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><GlobeIcon /></span>
-                  <SelectField id="segment" value={values.segment} onChange={handleChange("segment")} onBlur={handleBlur("segment")} state={fieldState("segment")} placeholder="Select segment…">
-                    {SEGMENTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </SelectField>
-                  <CheckIcon show={fieldState("segment") === "ok"} />
-                </div>
-                <FieldError message={touched.segment ? errors.segment : undefined} />
-              </div>
-            </div>
-
-            {/* ── Country ──────────────────────────────────────────────── */}
-            <div className="flex flex-col gap-1.5" style={{ maxWidth: "calc(50% - 8px)" }}>
-              <FieldLabel htmlFor="country" optional>Country of origin</FieldLabel>
+        <div className="flex flex-col gap-1.5">
+                 <FieldLabel htmlFor="country" optional>Country of origin</FieldLabel>
               <div className="relative">
                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><GlobeIcon /></span>
                 <SelectField id="country" value={values.country} onChange={handleChange("country")} onBlur={handleBlur("country")} state="">
                   {COUNTRIES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </SelectField>
               </div>
+              </div>
             </div>
+
+            {/* ── Country ──────────────────────────────────────────────── */}
+            
 
             {/* ── Divider + Details section ─────────────────────────────── */}
             <div className="h-px bg-slate-100 my-1" />
@@ -821,4 +803,4 @@ export default function AddBrandPage() {
       {toast && <Toast title={toast.title} subtitle={toast.subtitle} />}
     </div>
   );
-
+}

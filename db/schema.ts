@@ -67,11 +67,7 @@ export const brands = pgTable(
     id: uuid("id")
       .defaultRandom()
       .primaryKey(),
-
     tenantId: uuid("tenant_id").notNull(),
-
-    segmentId: uuid("segment_id"),
-
     manufacturerId: uuid("manufacturer_id")
     .references(()=>manufacturers.id)
     .notNull(),
