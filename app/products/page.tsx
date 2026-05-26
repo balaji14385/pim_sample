@@ -3,23 +3,23 @@ import { useState,useEffect } from "react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface ProductForm {
-  productName: string;
-  brand: string;
+  name: string;
+  brandId: string;
   productCode: string;
   description: string;
   launchDate: string;
 }
 
 interface FormErrors {
-  productName?: string;
-  brand?: string;
+  name?: string;
+  brandId?: string;
   productCode?: string;
   description?: string;
   launchDate?: string;
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────
-const BRANDS = [
+const brandId= [
   "Clinic Plus",
   "Dove",
   "Sunsilk",
@@ -38,16 +38,16 @@ const PRODUCT_CODE_REGEX = /^[A-Z0-9\-]{3,20}$/;
 function validate(form: ProductForm): FormErrors {
   const errors: FormErrors = {};
 
-  if (!form.productName.trim()) {
-    errors.productName = "Product name is required.";
-  } else if (form.productName.trim().length < 2) {
-    errors.productName = "Product name must be at least 2 characters.";
-  } else if (form.productName.trim().length > 120) {
-    errors.productName = "Product name must be 120 characters or fewer.";
+  if (!form.name.trim()) {
+    errors.name = "Product name is required.";
+  } else if (form.name.trim().length < 2) {
+    errors.name = "Product name must be at least 2 characters.";
+  } else if (form.name.trim().length > 120) {
+    errors.name = "Product name must be 120 characters or fewer.";
   }
 
-  if (!form.brand) {
-    errors.brand = "Please select a brand.";
+  if (!form.brandId) {
+    errors.brandId= "Please select a brand.";
   }
 
   if (!form.productCode.trim()) {
@@ -147,8 +147,8 @@ function InputField({
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function AddProductPage() {
   const [form, setForm] = useState<ProductForm>({
-    productName: "",
-    brand: "",
+    name: "",
+    brandId: "",
     productCode: "",
     description: "",
     launchDate: "",
@@ -158,13 +158,14 @@ export default function AddProductPage() {
   const [touched, setTouched] = useState<Partial<Record<keyof ProductForm, boolean>>>({});
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [brandList,setBrandList]=useState([])
+  const [brandIdList,setbrandIdList]=useState([])
     useEffect(()=>{
+  
        async function blist(){
          let data= await fetch('/api/brandsList')
          let finalData=await data.json()
             console.log(finalData)
-          setBrandList(finalData.data)
+          setbrandIdList(finalData.data)
                }
        blist()
     },[]);  
@@ -186,7 +187,7 @@ export default function AddProductPage() {
     setErrors((prev) => ({ ...prev, ...validate(form) }));
   }
 
-  function handleSave() {
+  async function handleSave() {
     const allTouched = Object.fromEntries(
       (Object.keys(form) as (keyof ProductForm)[]).map((k) => [k, true])
     ) as Record<keyof ProductForm, boolean>;
@@ -195,20 +196,33 @@ export default function AddProductPage() {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
-      setSaved(true);
-    }, 1200);
+    console.log(form)
+       let res=await fetch('/api/products',{
+        'method':'post',
+        'headers':{
+            'Content-Type':'application/json',
+
+        },
+        'body':JSON.stringify(form)
+       })
+       let data=await res.json()
+      if(data.status==true)
+      {
+        setSaving(false);
+        handleReset()
+        setSaved(true);
+
+      }
   }
 
   function handleReset() {
-    setForm({ productName: "", brand: "", productCode: "", description: "", launchDate: "" });
+    setForm({ name: "", brandId: "", productCode: "", description: "", launchDate: "" });
     setErrors({});
     setTouched({});
     setSaved(false);
   }
 
-  const NAV_ITEMS = ["Dashboard", "Products", "Categories", "Brands", "Reports"];
+  const NAV_ITEMS = ["Dashboard", "Products", "Categories", "brandIdIds", "Reports"];
 
   return (
     <div
@@ -253,50 +267,50 @@ export default function AddProductPage() {
                 <FieldWrapper
                   label="Product Name"
                   required
-                  error={touched.productName ? errors.productName : undefined}
+                  error={touched.name ? errors.name : undefined}
                 >
                   <InputField
-                    value={form.productName}
-                    onChange={(e) => handleChange("productName", e.target.value)}
-                    onBlur={() => handleBlur("productName")}
+                    value={form.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    onBlur={() => handleBlur("name")}
                     placeholder="e.g. Clinic Plus Strong & Long Shampoo 340ml"
-                    hasError={!!(touched.productName && errors.productName)}
+                    hasError={!!(touched.name && errors.name)}
                     maxLength={120}
                   />
                   <div className="flex justify-end mt-0.5">
-                    <span className={`text-[10px] font-medium ${form.productName.length > 100 ? "text-orange-400" : "text-slate-300"}`}>
-                      {form.productName.length}/120
+                    <span className={`text-[10px] font-medium ${form.name.length > 100 ? "text-orange-400" : "text-slate-300"}`}>
+                      {form.name.length}/120
                     </span>
                   </div>
                 </FieldWrapper>
               </div>
 
-              {/* Brand */}
+              {/* brandId */}
               <FieldWrapper
-                label="Brand"
+                label="brand"
                 required
-                error={touched.brand ? errors.brand : undefined}
+                error={touched.brandId ? errors.brandId : undefined}
               >
                 <div className="relative">
                   <select
-                    value={form.brand}
-                    onChange={(e) => handleChange("brand", e.target.value)}
-                    onBlur={() => handleBlur("brand")}
+                    value={form.brandId}
+                    onChange={(e) => handleChange("brandId", e.target.value)}
+                    onBlur={() => handleBlur("brandId")}
                     className={`
                       w-full appearance-none rounded-lg px-4 py-2.5 text-sm bg-white border
                       outline-none transition-all duration-200 cursor-pointer
                       focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500
-                      ${touched.brand && errors.brand
+                      ${touched.brandId && errors.brandId
                         ? "border-red-300 bg-red-50 text-slate-400"
-                        : form.brand
+                        : form.brandId
                           ? "border-slate-200 text-slate-800 hover:border-slate-300"
                           : "border-slate-200 text-slate-400 hover:border-slate-300"
                       }
                     `}
                   >
-                    <option value="" disabled>Select a brand…</option>
-                   { brandList && 
-   brandList.map((e)=>{
+                    <option value="" disabled>Select a brandId…</option>
+                   { brandIdList && 
+   brandIdList.map((e)=>{
 
     return <option key={e.id} value={e.id}>{e.name}</option>
    })

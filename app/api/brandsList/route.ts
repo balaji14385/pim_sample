@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 
 export async function GET(req:NextRequest) {
     try {
-        let data=await db.select({id:brands.id,company_name:brands.name}).from(brands)       
+        let data=await db.select({id:brands.id,name:brands.name}).from(brands)       
         return NextResponse.json({
             status:true,
             message:"successfully fetch the data",
