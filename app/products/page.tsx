@@ -171,49 +171,73 @@ export default function AddProductPage() {
     },[]);  
   const charLeft = 1000 - form.description.length;
 
-  function handleChange<K extends keyof ProductForm>(key: K, value: string) {
-    setForm((prev) => ({ ...prev, [key]: value }));
-    if (touched[key]) {
-      setErrors((prev) => ({
-        ...prev,
-        ...validate({ ...form, [key]: value }),
-      }));
-    }
-    setSaved(false);
+function handleChange<K extends keyof ProductForm>(
+  key: K,
+  value: string
+) {
+  const updatedForm = {
+    ...form,
+    [key]: value,
+  };
+
+  setForm(updatedForm);
+
+  if (touched[key]) {
+    setErrors(validate(updatedForm));
   }
 
-  function handleBlur(key: keyof ProductForm) {
-    setTouched((prev) => ({ ...prev, [key]: true }));
-    setErrors((prev) => ({ ...prev, ...validate(form) }));
-  }
+  setSaved(false);
+}
+
+function handleBlur(key: keyof ProductForm) {
+  setTouched((prev) => ({ ...prev, [key]: true }));
+  setForm((currentForm) => {
+    setErrors(validate(currentForm));
+    return currentForm;
+  });
+}
 
   async function handleSave() {
-    const allTouched = Object.fromEntries(
-      (Object.keys(form) as (keyof ProductForm)[]).map((k) => [k, true])
-    ) as Record<keyof ProductForm, boolean>;
-    setTouched(allTouched);
-    const errs = validate(form);
-    setErrors(errs);
-    if (Object.keys(errs).length > 0) return;
+  const allTouched = Object.fromEntries(
+    (Object.keys(form) as (keyof ProductForm)[]).map((k) => [k, true])
+  ) as Record<keyof ProductForm, boolean>;
+
+  setTouched(allTouched);
+
+  const errs = validate(form);
+
+  setErrors(errs);
+
+  if (Object.keys(errs).length > 0) return;
+
+  try {
     setSaving(true);
-    console.log(form)
-       let res=await fetch('/api/products',{
-        'method':'post',
-        'headers':{
-            'Content-Type':'application/json',
 
-        },
-        'body':JSON.stringify(form)
-       })
-       let data=await res.json()
-      if(data.status==true)
-      {
-        setSaving(false);
-        handleReset()
-        setSaved(true);
+    console.log(form);
 
-      }
+    const res = await fetch("/api/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    if (data.status === true) {
+      handleReset();
+      setSaved(true);
+    } else {
+      alert(data.message || "Failed to save product");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
+  } finally {
+    setSaving(false);
   }
+}
 
   function handleReset() {
     setForm({ name: "", brandId: "", productCode: "", description: "", launchDate: "" });
