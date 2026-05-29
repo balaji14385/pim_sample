@@ -382,14 +382,21 @@ export default function AddBrandPage() {
   const [toast, setToast] = useState<{ title: string; subtitle: string } | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-const [brandList,setBrandList]=useState([])
-  useEffect(()=>{
-     async function blist(){
+  const [brandList,setBrandList]=useState([])
+  const [parentBrand,setParentBrand]=useState([])
+  async function blist(){
        let data= await fetch('/api/manufacturerList')
        let finalData=await data.json()
         setBrandList(finalData.data)
              }
+      async function plist(){
+       let data= await fetch('/api/parentBrandList')
+       let finalData=await data.json()
+        setParentBrand(finalData.data)
+             }
+  useEffect(()=>{
      blist()
+     plist()
   },[]);  
   
   const progress = calcProgress(values, logoFile);
@@ -480,7 +487,8 @@ const [brandList,setBrandList]=useState([])
     await new Promise<void>((r) => setTimeout(r, 1500));
     setLoading(false);
     console.log(values)
-          let res=await fetch('/api/brands',{
+  try {
+            let res=await fetch('/api/brands',{
         'method':'post',
         'headers':{
             'Content-Type':'application/json',
@@ -488,12 +496,19 @@ const [brandList,setBrandList]=useState([])
         },
         'body':JSON.stringify(values)
        })
+       await plist()
        let data=await res.json()
       if(data.status==true)
       {
          showToast("Brand saved!", `"${values.name.trim()}" has been added to your catalog.`);
          handleReset();
+         return ;
       }
+      showToast("Brand not saved!", `${data.message}`);
+
+  } catch (error:unknown) {
+    console.log(error.message)
+  }
    
   };
 
@@ -610,7 +625,7 @@ const [brandList,setBrandList]=useState([])
                   <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><BuildingIcon /></span>
                   <SelectField id="manufacturer" value={values.manufacturerId} onChange={handleChange("manufacturerId")} onBlur={handleBlur("manufacturerId")} state={fieldState("manufacturerId")} placeholder="Select manufacturer…">
                      { brandList && 
-   brandList.map((e)=>{
+           brandList.map((e)=>{
 
     return <option key={e.id} value={e.id}>{e.company_name}</option>
    })
@@ -630,9 +645,13 @@ const [brandList,setBrandList]=useState([])
                 <FieldLabel htmlFor="parentBrand" optional>Parent brand</FieldLabel>
                 <div className="relative">
                   <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><ArrowUpIcon /></span>
-                  <SelectField id="parentBrand" value={values.parentBrand} onChange={handleChange("parentBrand")} onBlur={handleBlur("parentBrand")} state="">
-                    {PARENT_BRANDS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </SelectField>
+                  <SelectField id="parentBrand" value={values.parentBrand} onChange={handleChange("parentBrand")} onBlur={handleBlur("parentBrand")} state={fieldState("parentBrand")} placeholder="Select parentBrand">
+{ parentBrand && 
+   parentBrand.map((e)=>{
+
+    return <option key={e.id} value={e.id}>{e.name}</option>
+   })
+}                  </SelectField>
                 </div>
               </div>
         <div className="flex flex-col gap-1.5">

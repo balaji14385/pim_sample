@@ -8,6 +8,20 @@
       "when": 1779776957717,
       "tag": "0000_chief_kat_farrell",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779948995982,
+      "tag": "0001_many_kylun",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780036737383,
+      "tag": "0002_low_inertia",
+      "breakpoints": true
     }
   ]
 }
