@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useMemo, useState } from "react";
-
+import { useRouter } from "next/navigation";
 // ─── Types ────────────────────────────────────────────────────────────────────
 type CategoryRow = {
   categoryName: string;
@@ -40,6 +40,7 @@ export default function CategoryListPage() {
   const [rows, setRows] = useState<CategoryRow[]>([]);
   const [search, setSearch] = useState("");
   const [industryFilter, setIndustryFilter] = useState<string>("ALL");
+  const router=useRouter()
   useEffect(()=>{
    async function disCat() {
     try {
@@ -124,9 +125,8 @@ const totalSubCategories = useMemo(() => {
               All registered categories with their sub-categories and industry mapping
             </p>
           </div>
-          <div className="rounded-xl border bg-white px-4 py-2 shadow-sm">
-            <p className="text-xs text-slate-500">Total Categories</p>
-            <p className="text-xl font-bold text-emerald-600">{grouped.length}</p>
+          <div className="rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
+           <button onClick={()=>{router.push('/categories')}}>AddCategory</button>
           </div>
         </div>
 

@@ -21,14 +21,7 @@ interface FormErrors {
   description?: string;
   logo?: string;
 }
-interface brand{
-  id:string;
-  company_name:string;
-}
-interface industry{
-  id:string;
-  name:string;
-}
+
 type FieldName = keyof FormValues;
 
 // ─── OPTION LISTS ─────────────────────────────────────────────────────────────
@@ -45,6 +38,8 @@ const BRAND_TYPES = [
   { value: "wellness",         label: "Wellness" },
   { value: "food_beverage",    label: "Food & Beverage" },
   { value: "home_care",        label: "Home Care" },
+  { value: "detergent",        label: "Detergent"},
+  { value: "electronics",       label: "Electronics"},
   { value: "other",            label: "Other" },
 ];
 
@@ -77,17 +72,138 @@ const PARENT_BRANDS = [
 
 
 const COUNTRIES = [
-  { value: "IN", label: "India" },
-  { value: "US", label: "United States" },
-  { value: "GB", label: "United Kingdom" },
-  { value: "DE", label: "Germany" },
-  { value: "FR", label: "France" },
-  { value: "JP", label: "Japan" },
-  { value: "CN", label: "China" },
+  { value: "AF", label: "Afghanistan" },
+  { value: "AL", label: "Albania" },
+  { value: "DZ", label: "Algeria" },
+  { value: "AD", label: "Andorra" },
+  { value: "AO", label: "Angola" },
+  { value: "AR", label: "Argentina" },
+  { value: "AM", label: "Armenia" },
   { value: "AU", label: "Australia" },
-  { value: "CA", label: "Canada" },
+  { value: "AT", label: "Austria" },
+  { value: "AZ", label: "Azerbaijan" },
+  { value: "BH", label: "Bahrain" },
+  { value: "BD", label: "Bangladesh" },
+  { value: "BY", label: "Belarus" },
+  { value: "BE", label: "Belgium" },
+  { value: "BZ", label: "Belize" },
+  { value: "BJ", label: "Benin" },
+  { value: "BT", label: "Bhutan" },
+  { value: "BO", label: "Bolivia" },
+  { value: "BA", label: "Bosnia and Herzegovina" },
+  { value: "BW", label: "Botswana" },
   { value: "BR", label: "Brazil" },
-  { value: "other", label: "Other" },
+  { value: "BN", label: "Brunei" },
+  { value: "BG", label: "Bulgaria" },
+  { value: "BF", label: "Burkina Faso" },
+  { value: "BI", label: "Burundi" },
+  { value: "KH", label: "Cambodia" },
+  { value: "CM", label: "Cameroon" },
+  { value: "CA", label: "Canada" },
+  { value: "TD", label: "Chad" },
+  { value: "CL", label: "Chile" },
+  { value: "CN", label: "China" },
+  { value: "CO", label: "Colombia" },
+  { value: "CG", label: "Congo" },
+  { value: "CR", label: "Costa Rica" },
+  { value: "HR", label: "Croatia" },
+  { value: "CU", label: "Cuba" },
+  { value: "CY", label: "Cyprus" },
+  { value: "CZ", label: "Czech Republic" },
+  { value: "DK", label: "Denmark" },
+  { value: "DO", label: "Dominican Republic" },
+  { value: "EC", label: "Ecuador" },
+  { value: "EG", label: "Egypt" },
+  { value: "SV", label: "El Salvador" },
+  { value: "EE", label: "Estonia" },
+  { value: "ET", label: "Ethiopia" },
+  { value: "FI", label: "Finland" },
+  { value: "FR", label: "France" },
+  { value: "GE", label: "Georgia" },
+  { value: "DE", label: "Germany" },
+  { value: "GH", label: "Ghana" },
+  { value: "GR", label: "Greece" },
+  { value: "GT", label: "Guatemala" },
+  { value: "HT", label: "Haiti" },
+  { value: "HN", label: "Honduras" },
+  { value: "HK", label: "Hong Kong" },
+  { value: "HU", label: "Hungary" },
+  { value: "IS", label: "Iceland" },
+  { value: "IN", label: "India" },
+  { value: "ID", label: "Indonesia" },
+  { value: "IR", label: "Iran" },
+  { value: "IQ", label: "Iraq" },
+  { value: "IE", label: "Ireland" },
+  { value: "IL", label: "Israel" },
+  { value: "IT", label: "Italy" },
+  { value: "JM", label: "Jamaica" },
+  { value: "JP", label: "Japan" },
+  { value: "JO", label: "Jordan" },
+  { value: "KZ", label: "Kazakhstan" },
+  { value: "KE", label: "Kenya" },
+  { value: "KW", label: "Kuwait" },
+  { value: "KG", label: "Kyrgyzstan" },
+  { value: "LA", label: "Laos" },
+  { value: "LV", label: "Latvia" },
+  { value: "LB", label: "Lebanon" },
+  { value: "LY", label: "Libya" },
+  { value: "LT", label: "Lithuania" },
+  { value: "LU", label: "Luxembourg" },
+  { value: "MO", label: "Macau" },
+  { value: "MG", label: "Madagascar" },
+  { value: "MY", label: "Malaysia" },
+  { value: "MV", label: "Maldives" },
+  { value: "ML", label: "Mali" },
+  { value: "MT", label: "Malta" },
+  { value: "MX", label: "Mexico" },
+  { value: "MN", label: "Mongolia" },
+  { value: "MA", label: "Morocco" },
+  { value: "MM", label: "Myanmar" },
+  { value: "NP", label: "Nepal" },
+  { value: "NL", label: "Netherlands" },
+  { value: "NZ", label: "New Zealand" },
+  { value: "NG", label: "Nigeria" },
+  { value: "KP", label: "North Korea" },
+  { value: "NO", label: "Norway" },
+  { value: "OM", label: "Oman" },
+  { value: "PK", label: "Pakistan" },
+  { value: "PA", label: "Panama" },
+  { value: "PY", label: "Paraguay" },
+  { value: "PE", label: "Peru" },
+  { value: "PH", label: "Philippines" },
+  { value: "PL", label: "Poland" },
+  { value: "PT", label: "Portugal" },
+  { value: "QA", label: "Qatar" },
+  { value: "RO", label: "Romania" },
+  { value: "RU", label: "Russia" },
+  { value: "SA", label: "Saudi Arabia" },
+  { value: "SG", label: "Singapore" },
+  { value: "SK", label: "Slovakia" },
+  { value: "SI", label: "Slovenia" },
+  { value: "ZA", label: "South Africa" },
+  { value: "KR", label: "South Korea" },
+  { value: "ES", label: "Spain" },
+  { value: "LK", label: "Sri Lanka" },
+  { value: "SE", label: "Sweden" },
+  { value: "CH", label: "Switzerland" },
+  { value: "SY", label: "Syria" },
+  { value: "TW", label: "Taiwan" },
+  { value: "TZ", label: "Tanzania" },
+  { value: "TH", label: "Thailand" },
+  { value: "TN", label: "Tunisia" },
+  { value: "TR", label: "Turkey" },
+  { value: "UG", label: "Uganda" },
+  { value: "UA", label: "Ukraine" },
+  { value: "AE", label: "United Arab Emirates" },
+  { value: "GB", label: "United Kingdom" },
+  { value: "US", label: "United States" },
+  { value: "UY", label: "Uruguay" },
+  { value: "UZ", label: "Uzbekistan" },
+  { value: "VE", label: "Venezuela" },
+  { value: "VN", label: "Vietnam" },
+  { value: "YE", label: "Yemen" },
+  { value: "ZM", label: "Zambia" },
+  { value: "ZW", label: "Zimbabwe" }
 ];
 
 const ALLOWED_LOGO_TYPES = ["image/png", "image/jpeg", "image/svg+xml", "image/webp"];
@@ -389,8 +505,8 @@ export default function AddBrandPage() {
   const [toast, setToast] = useState<{ title: string; subtitle: string } | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [brandList,setBrandList]=useState<brand[]>([])
-  const [parentBrand,setParentBrand]=useState<industry[]>([])
+  const [brandList,setBrandList]=useState([])
+  const [parentBrand,setParentBrand]=useState([])
   async function blist(){
        let data= await fetch('/api/manufacturerList')
        let finalData=await data.json()
@@ -513,7 +629,7 @@ export default function AddBrandPage() {
       }
       showToast("Brand not saved!", `${data.message}`);
 
-  } catch (error:any) {
+  } catch (error:unknown) {
     console.log(error.message)
   }
    
@@ -617,9 +733,18 @@ export default function AddBrandPage() {
                 <FieldLabel htmlFor="brandType" required>Brand type</FieldLabel>
                 <div className="relative">
                   <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><GridIcon /></span>
-                  <SelectField id="brandType" value={values.brandType} onChange={handleChange("brandType")} onBlur={handleBlur("brandType")} state={fieldState("brandType")} placeholder="Select type…">
-                    {BRAND_TYPES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </SelectField>
+                  <input
+                    type="text"
+                    id="brandType"
+                    placeholder="e.g. Hair Care, Electronics, Skin Care"
+                    value={values.brandType}
+                    onChange={handleChange("brandType")}
+                    onBlur={handleBlur("brandType")}
+                    className={inputCls(fieldState("brandType"))}
+                    maxLength={100}
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
                   <CheckIcon show={fieldState("brandType") === "ok"} />
                 </div>
                 <FieldError message={touched.brandType ? errors.brandType : undefined} />

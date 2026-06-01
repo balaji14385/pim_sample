@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, ReactNode } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+type SidebarProps = {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
 
 // ─── ICONS ────────────────────────────────────────────────────────────────────
 const Icon = ({ d, size = 18 }: { d: string; size?: number }) => (
@@ -40,40 +44,84 @@ const MENU = [
   { to: "/registeredProducts", label: "Products", icon: ICONS.products },
 ] as const;
 
-export default function Sidebar() {
-  const [open, setOpen] = useState(true);
-
-  // Changed from useRouterState()
+export default function Sidebar({
+  open,
+  setOpen,
+}: SidebarProps) {
   const pathname = usePathname();
 
+  const [mobileOpen, setMobileOpen] =
+    useState(false);
+
   return (
-<div className="flex h-screen overflow-hidden">
+    <>
+      {/* Mobile Header */}
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between border-b bg-white px-4 md:hidden">
+        <button
+          onClick={() => setMobileOpen(true)}
+        >
+          ☰
+        </button>
+
+        <h2 className="font-bold">
+          BOXAIO
+        </h2>
+      </div>
+
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={() =>
+            setMobileOpen(false)
+          }
+        />
+      )}
 
       {/* Sidebar */}
-       <aside
-    className={`${
-      open ? "w-[212px]" : "w-20"
-    } fixed left-0 top-0 z-50 hidden h-screen flex-col border-r border-slate-200 bg-white shadow-sm transition-all duration-300 md:flex`}
-  >
+      <aside
+        className={`
+          fixed
+          left-0
+          top-0
+          z-50
+          h-screen
+          border-r
+          bg-white
+          shadow-sm
+          transition-all
+          duration-300
 
-        {/* Brand */}
-        <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-5">
+          ${
+            open
+              ? "w-[212px]"
+              : "w-[80px]"
+          }
 
+          ${
+            mobileOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
+          }
+
+          md:translate-x-0
+        `}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-3 border-b px-4 py-5">
           <Image
             src="/boxaio-logo.png"
             alt="BOXAIO"
             width={40}
             height={40}
-            className="shrink-0 object-contain"
           />
 
           {open && (
-            <div className="min-w-0">
-              <h1 className="truncate bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
+            <div>
+              <h1 className="font-bold text-green-600">
                 BOXAIO
               </h1>
-
-              <p className="truncate text-[10px] font-medium uppercase tracking-widest text-slate-400">
+              <p className="text-xs text-slate-500">
                 PIM Enterprise
               </p>
             </div>
@@ -81,25 +129,37 @@ export default function Sidebar() {
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+        <nav className="flex-1 space-y-1 p-3">
           {MENU.map((item) => {
-            const active = pathname === item.to;
+            const active =
+              pathname === item.to;
 
             return (
               <Link
                 key={item.to}
                 href={item.to}
-                className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
-                  active
-                    ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md shadow-green-500/30"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                }`}
-                title={!open ? item.label : undefined}
+                onClick={() =>
+                  setMobileOpen(false)
+                }
+                className={`
+                  flex
+                  items-center
+                  gap-3
+                  rounded-xl
+                  px-3
+                  py-3
+
+                  ${
+                    active
+                      ? "bg-green-600 text-white"
+                      : "text-slate-600 hover:bg-slate-100"
+                  }
+                `}
               >
-                <Icon d={item.icon} size={18} />
+                <Icon d={item.icon} />
 
                 {open && (
-                  <span className="truncate">
+                  <span>
                     {item.label}
                   </span>
                 )}
@@ -109,19 +169,18 @@ export default function Sidebar() {
         </nav>
 
         {/* Collapse */}
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="m-3 flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"
-        >
-          <Icon d={ICONS.menu} size={14} />
+       <button
+    onClick={() => setOpen((v) => !v)}
+    className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
+  >
+    <Icon d={ICONS.menu} size={14} />
 
-          {open && <span>Collapse</span>}
+    {open && <span>Collapse</span>}
+          {open ? "Collapse" : "Expand"}
         </button>
-
       </aside>
-
-      {/* Main */}
-
-    </div>
+    </>
   );
 }
+
+

@@ -1,6 +1,7 @@
 "use client";
 
 import { manufacturers } from "@/db/schema";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 type ManufacturerRow = {
@@ -74,7 +75,7 @@ function ManufacturersListPage() {
   const [query, setQuery] = useState("");
   const [companyFilter, setCompanyFilter] =
     useState<string>("all");
-
+ const router=useRouter()
 useEffect(()=>{
    async function disMan() {
     try {
@@ -194,9 +195,8 @@ const grouped = useMemo<GroupedManufacturer[]>(() => {
             </p>
           </div>
 
-           <div className="rounded-xl border bg-white px-4 py-2 shadow-sm">
-            <p className="text-xs text-slate-500">Total Manufacturers</p>
-            <p className="text-xl font-bold text-emerald-600">{grouped.length}</p>
+          <div className="rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
+           <button onClick={()=>{router.push('/manufacture')}}>AddManufacture</button>
           </div>
         </div>
 

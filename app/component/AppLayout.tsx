@@ -1,20 +1,39 @@
+"use client"
+import { useState } from "react";
 import { ReactNode } from "react";
-import Sidebar from "./Sidebar";
-
+import Sidebar from "./Sidebar"
 export default function AppLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  return (
-   <div className="flex h-screen overflow-hidden">
-  <Sidebar />
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  <main className="ml-64 flex-1 min-w-0 overflow-y-auto">
-    <div className="w-full overflow-x-auto">
-      {children}
+  return (
+    <div className="h-screen overflow-hidden bg-slate-50">
+      <Sidebar
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+      />
+
+      <main
+        className={`
+          h-screen
+          overflow-hidden
+          transition-all
+          duration-300
+          ${
+            sidebarOpen
+              ? "md:ml-[212px]"
+              : "md:ml-[80px]"
+          }
+        `}
+      >
+        {/* Only content scrolls horizontally */}
+        <div className="h-full overflow-y-auto overflow-x-auto p-4">
+          {children}
+        </div>
+      </main>
     </div>
-  </main>
-</div>
   );
 }

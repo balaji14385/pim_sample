@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useMemo, useState } from "react";
-
+import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 type Product = {
   productName: string;
   productCode: string;
@@ -48,7 +49,7 @@ export default function ProductsListPage() {
   const [query, setQuery] = useState("");
   const [brandFilter, setBrandFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-
+  const router=useRouter()
  useEffect(() => {
   async function loadProducts() {
     try {
@@ -106,9 +107,8 @@ const totalSkus = useMemo(
             </p>
           </div>
 
-          <div className="rounded-xl border bg-white px-4 py-2 shadow-sm">
-            <p className="text-xs text-slate-500">Total Products</p>
-            <p className="text-xl font-bold text-emerald-600">{products.length}</p>
+          <div className="rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
+            <button onClick={()=>{router.push('/products')}}>AddProduct</button>
           </div>
         </div>
 

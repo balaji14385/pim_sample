@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useMemo, useState } from "react";
-
+import { useRouter } from "next/navigation";
 type Brand = {
   logo: string;
   brandName: string;
@@ -18,7 +18,7 @@ export default function BrandsPage() {
   const [query, setQuery] = useState("");
   const [companyFilter, setCompanyFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
-
+  const router=useRouter()
   useEffect(() => {
     async function display() {
       try {
@@ -98,9 +98,8 @@ export default function BrandsPage() {
             </p>
           </div>
 
-          <div className="rounded-xl border bg-white px-4 py-2 shadow-sm">
-            <p className="text-xs text-slate-500">Total Brands</p>
-            <p className="text-xl font-bold text-emerald-600">{brands.length}</p>
+          <div className="rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
+            <button onClick={()=>{router.push('/brands')}}>AddBrand</button>
           </div>
         </div>
 
@@ -190,7 +189,7 @@ export default function BrandsPage() {
                     key={brand.brandCode}
                     className="group transition-all duration-300 hover:bg-emerald-50/40"
                   >
-                    <td className="px-3 py-5">
+                    <td className="px-6 py-5">
                       <div className="flex items-center gap-4">
                         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 font-bold text-white shadow">
                           {initials(brand.brandName)}
@@ -222,7 +221,7 @@ export default function BrandsPage() {
                       </span>
                     </td>
 
-                    <td className="px-6 py-5">
+                    <td className="px-3 py-5">
                       <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
                         {formatBrandType(brand.brandType)}
                       </span>
