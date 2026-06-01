@@ -174,8 +174,6 @@ export default function Sidebar({
     className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
   >
     <Icon d={ICONS.menu} size={14} />
-
-    {open && <span>Collapse</span>}
           {open ? "Collapse" : "Expand"}
         </button>
       </aside>
