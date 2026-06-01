@@ -136,7 +136,9 @@ export const products = pgTable("products", {
     .notNull(),
 
   name: varchar("name", { length: 255 }).notNull(),
-
+  subCategoryId: uuid("sub_category_id")
+  .references(() => subCategories.id)
+  .notNull(),
   productCode: varchar("product_code", { length: 100 }),
 
   description: text("description"),

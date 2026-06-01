@@ -1,5 +1,6 @@
 "use client";
 
+import { manufacturers } from "@/db/schema";
 import { useEffect, useMemo, useState } from "react";
 
 type ManufacturerRow = {
@@ -80,7 +81,7 @@ useEffect(()=>{
       let res = await fetch("/api/registeredManufacturer");
       let data = await res.json();
       setRows(data.data)
-    } catch (error:unknown) {
+    } catch (error:any) {
         console.log(error.message)
     }
    }
@@ -193,10 +194,9 @@ const grouped = useMemo<GroupedManufacturer[]>(() => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button className="rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-green-500/30 transition hover:shadow-lg">
-              + Add Manufacturer
-            </button>
+           <div className="rounded-xl border bg-white px-4 py-2 shadow-sm">
+            <p className="text-xs text-slate-500">Total Manufacturers</p>
+            <p className="text-xl font-bold text-emerald-600">{grouped.length}</p>
           </div>
         </div>
 

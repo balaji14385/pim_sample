@@ -23,6 +23,10 @@ interface FormErrors {
   productId?: string;
   variantName?: string;
 }
+interface product{
+  id:string;
+  name:string;
+}
 type FieldName = keyof FormValues;
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
@@ -130,13 +134,13 @@ export default function AddProductVariantPage() {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<ProductOption[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
-   const [product,setProduct]=useState([])
+   const [product,setProduct]=useState<product[]>([])
   async function blist(){
       try {
          let data= await fetch('/api/productList')
        let finalData=await data.json()
         setProduct(finalData.data)
-      } catch (error) {
+      } catch (error:any) {
         console.log(error.message)
       }finally {
     setProductsLoading(false);

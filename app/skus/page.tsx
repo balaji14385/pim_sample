@@ -23,6 +23,10 @@ interface FormErrors {
   sellingPrice?: string;
 }
 
+interface variant{
+  id:string;
+  name:string;
+}
 type FieldName = keyof FormValues;
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
@@ -165,13 +169,13 @@ export default function AddSkuPage() {
   const [loading, setLoading] = useState(false);
   const [variants, setVariants] = useState<VariantOption[]>([]);
   const [variantsLoading, setVariantsLoading] = useState(true);
-  const [variant,setVariant]=useState([])
+  const [variant,setVariant]=useState<variant[]>([])
   async function blist(){
       try {
          let data= await fetch('/api/variantList')
        let finalData=await data.json()
         setVariant(finalData.data)
-      } catch (error) {
+      } catch (error:any) {
         console.log(error.message)
       }finally {
     setVariantsLoading(false);

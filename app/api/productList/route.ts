@@ -11,7 +11,7 @@ export async function GET(req:NextRequest) {
             message:"successfully fetch the data",
             data
         },{status:200})
-    } catch (error:unknown) {
+    } catch (error:any) {
         console.log(error)
 
        return NextResponse.json({

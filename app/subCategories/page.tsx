@@ -14,7 +14,10 @@ interface FormErrors {
   code?: string;
 }
 type FieldName = keyof FormValues;
-
+interface industry{
+  id:string;
+  name:string;
+}
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const CODE_REGEX = /^[A-Z0-9_-]{3,20}$/;
 
@@ -103,7 +106,7 @@ function calcProgress(values: FormValues): number {
   if (values.categoryId.trim() && !validateField("categoryId", values.categoryId)) filled++;
   if (values.name.trim() && !validateField("name", values.name)) filled++;
   if (values.code.trim() && !validateField("code", values.code)) filled++;
-  return Math.min(100, Math.round((filled / 4) * 100));
+  return Math.min(100, Math.round((filled / 3) * 100));
 }
 
 // ─── ICON ────────────────────────────────────────────────────────────────────
@@ -234,7 +237,7 @@ export default function AddCategoryPage() {
   const [statusMsg, setStatusMsg] = useState("");
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const[industry,setIndustry]=useState([])
+  const[industry,setIndustry]=useState<industry[]>([])
 
   const progress = calcProgress(values);
     useEffect(()=>{
@@ -268,8 +271,8 @@ export default function AddCategoryPage() {
     return `${base} ${states[state] ?? states[""]} ${extra}`;
   };
 
-  const handleChange =
-    (field: Exclude<FieldName, "image">) =>
+const handleChange =
+  (field: FieldName) =>
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       let val = e.target.value;
       if (field === "code") {
@@ -279,15 +282,13 @@ export default function AddCategoryPage() {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     };
 
-  const handleBlur =
-    (field: Exclude<FieldName, "image">) =>
-    (_: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setTouched((prev) => ({ ...prev, [field]: true }));
-      setErrors((prev) => ({
-        ...prev,
-        [field]: validateField(field, values[field]),
-      }));
-    };
+const handleBlur = (field: FieldName) => () => {
+  setTouched((prev) => ({ ...prev, [field]: true }));
+  setErrors((prev) => ({
+    ...prev,
+    [field]: validateField(field, values[field]),
+  }));
+};
   const handleReset = () => {
     setValues(INITIAL_VALUES);
     setTouched({});
@@ -301,7 +302,7 @@ export default function AddCategoryPage() {
     e.preventDefault();
     setSuccess("");
 
-    setTouched({ categoryId: true, name: true, code: true, image: true });
+    setTouched({ categoryId: true, name: true, code: true,});
 
     const newErrors = validateAll(values);
     setErrors(newErrors);
@@ -336,7 +337,7 @@ export default function AddCategoryPage() {
         return ;
       }
     showToast( "Category not saved!", `${data.message}`);
-    } catch(error:unknown) {
+    } catch(error:any) {
       console.log(error.message)
       alert("Failed to save category");
     }

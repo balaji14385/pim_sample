@@ -302,7 +302,8 @@ export default function AddManufacturerPage() {
         );
         handleReset();
       }
-    } catch {
+    } catch(error:any) {
+      console.log(error.messages)
       alert("Failed to save manufacturer");
     }
 

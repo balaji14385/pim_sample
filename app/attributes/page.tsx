@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = "force-dynamic";
 import { useState,useEffect, ChangeEvent, FocusEvent, FormEvent } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -29,7 +29,10 @@ interface FormErrors {
   code?: string;
   dataType?: string;
 }
-
+type Category = {
+  id: number;
+  name: string;
+};
 type TextFieldName = "name" | "code";
 type SelectFieldName = "categoryId" | "dataType";
 type FieldName = TextFieldName | SelectFieldName;
@@ -170,19 +173,20 @@ export default function AddAttributePage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
   const [loading, setLoading] = useState(false);
-  const [category,setCategory]=useState([])
-   async function clist(){
+  const [category,setCategory]=useState<Category[]>([]);
+  
+  useEffect(()=>{
+     async function clist(){
         try {
            let data= await fetch('/api/categoriesList')
          let finalData=await data.json()
           setCategory(finalData.data)
-        } catch (error) {
+        } catch (error:any) {
           console.log(error.message)
         }finally {
       setLoading(false);
     }
        }
-  useEffect(()=>{
    clist()
   },[])
   console.log(category)

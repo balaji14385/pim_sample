@@ -15,6 +15,10 @@ interface FormErrors {
   code?: string;
   image?: string;
 }
+interface industrys{
+  id:string;
+  name:string;
+}
 type FieldName = keyof FormValues;
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
@@ -260,7 +264,7 @@ export default function AddCategoryPage() {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const[industry,setIndustry]=useState([])
+  const[industry,setIndustry]=useState<industrys []>([])
 
   const progress = calcProgress(values);
     useEffect(()=>{
@@ -296,8 +300,12 @@ export default function AddCategoryPage() {
   };
 
   const handleChange =
-    (field: Exclude<FieldName, "image">) =>
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  (field: Exclude<FieldName, "image">) =>
+  (
+    e: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
       let val = e.target.value;
       if (field === "code") {
         val = val.toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 20);
@@ -306,9 +314,13 @@ export default function AddCategoryPage() {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     };
 
-  const handleBlur =
-    (field: Exclude<FieldName, "image">) =>
-    (_: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+ const handleBlur =
+  (field: Exclude<FieldName, "image">) =>
+  (
+    _: FocusEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
       setTouched((prev) => ({ ...prev, [field]: true }));
       setErrors((prev) => ({
         ...prev,
@@ -398,7 +410,7 @@ export default function AddCategoryPage() {
           "Category not saved!",
           `${data.message}`
         );
-    } catch(error:unknown) {
+    } catch(error:any) {
       console.log(error.message)
       alert("Failed to save category");
     }

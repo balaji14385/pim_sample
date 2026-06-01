@@ -1,11 +1,11 @@
 import { NextRequest,NextResponse } from "next/server";
 import { db } from "@/db/index";
-import { industries } from "@/db/schema";
+import { subCategories } from "@/db/schema";
 
 
 export async function GET(req:NextRequest) {
     try {
-        let data=await db.select({id:industries.id,name:industries.name}).from(industries)       
+        let data=await db.select({id:subCategories.id,name:subCategories.name}).from(subCategories)       
         return NextResponse.json({
             status:true,
             message:"successfully fetch the data",

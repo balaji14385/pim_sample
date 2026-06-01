@@ -46,7 +46,7 @@ export async function GET() {
             message: "successfully fetch data",
             data
         }, { status: 200 })
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.log(error)
 
         return NextResponse.json({

@@ -46,7 +46,7 @@ export default function CategoryListPage() {
       let res = await fetch("/api/registeredCategories");
       let data = await res.json();
       setRows(data.data)
-    } catch (error:unknown) {
+    } catch (error:any) {
         console.log(error.message)
     }
    }
@@ -124,8 +124,9 @@ const totalSubCategories = useMemo(() => {
               All registered categories with their sub-categories and industry mapping
             </p>
           </div>
-          <div className="flex items-center gap-2">
-
+          <div className="rounded-xl border bg-white px-4 py-2 shadow-sm">
+            <p className="text-xs text-slate-500">Total Categories</p>
+            <p className="text-xl font-bold text-emerald-600">{grouped.length}</p>
           </div>
         </div>
 

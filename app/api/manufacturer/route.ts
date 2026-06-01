@@ -15,7 +15,7 @@ export async function POST(req:NextRequest) {
             status:true,
             message:"successfully inserted"
         },{status:200})
-    } catch (error:unknown) {
+    } catch (error:any) {
         console.log(error)
 
        return NextResponse.json({
