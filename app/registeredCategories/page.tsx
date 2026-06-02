@@ -126,7 +126,7 @@ const totalSubCategories = useMemo(() => {
             </p>
           </div>
           <div className="rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
-           <button onClick={()=>{router.push('/categories')}}>AddCategory</button>
+           <button className="cursor-pointer" onClick={()=>{router.push('/categories')}}>Add Category</button>
           </div>
         </div>
 
@@ -220,7 +220,7 @@ const totalSubCategories = useMemo(() => {
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 w-1">
                         <span className="inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700">
                           {g.industryName}
                         </span>

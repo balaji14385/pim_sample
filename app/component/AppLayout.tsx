@@ -30,7 +30,7 @@ export default function AppLayout({
         `}
       >
         {/* Only content scrolls horizontally */}
-        <div className="h-full overflow-y-auto overflow-x-auto p-4">
+        <div className="h-full overflow-y-auto overflow-x-auto p-4 mt-6">
           {children}
         </div>
       </main>

@@ -911,7 +911,9 @@ export default function AddBrandPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[.99] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-[13.5px] px-6 py-[9px] rounded-lg shadow-sm shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-px transition-all duration-150 border-none cursor-pointer"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[.99] disabled:opacity-50 disabled:cursor-not-allowed text-white 
+              md:font-medium md:text-[13.5px] md:px-6 md:py-[9px] font-small text-[9px] px-4 py-3
+              rounded-lg shadow-sm shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-px transition-all duration-150 border-none cursor-pointer"
             >
               {loading ? (
                 <>

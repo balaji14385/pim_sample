@@ -99,7 +99,7 @@ export default function BrandsPage() {
           </div>
 
           <div className="rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
-            <button onClick={()=>{router.push('/brands')}}>AddBrand</button>
+            <button className="cursor-pointer" onClick={()=>{router.push('/brands')}}>Add Brand</button>
           </div>
         </div>
 
@@ -190,20 +190,20 @@ export default function BrandsPage() {
                     className="group transition-all duration-300 hover:bg-emerald-50/40"
                   >
                     <td className="px-6 py-5">
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 font-bold text-white shadow">
                           {initials(brand.brandName)}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-slate-800">{brand.brandName}</h3>
-                          <p className="max-w-[150px] truncate text-xs text-slate-500">
+                          <h3 className="px-3 py-2 text-sm text-left font-semibold">{brand.brandName}</h3>
+                          {/* <p className="max-w-[150px] truncate text-xs text-slate-500">
                             {brand.logo || "No logo"}
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                     </td>
 
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-5">
                       {brand.parentBrandName ? (
                         <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
                           {brand.parentBrandName}
@@ -215,16 +215,17 @@ export default function BrandsPage() {
                       )}
                     </td>
 
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-5">
                       <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-xs font-semibold">
                         {brand.brandCode}
                       </span>
                     </td>
 
-                    <td className="px-3 py-5">
-                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                    <td className="px-5 py-5  text-sm font-medium text-slate-700 ">
+                                            <span className="inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700">
+
                         {formatBrandType(brand.brandType)}
-                      </span>
+                        </span>
                     </td>
 
                     <td className="px-6 py-5 text-sm font-medium text-slate-700">

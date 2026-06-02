@@ -681,7 +681,9 @@ export default function AddCategoryPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[.99] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-[14px] px-6 py-2.5 rounded-lg shadow-sm shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-px transition-all duration-150"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[.99] disabled:opacity-50 disabled:cursor-not-allowed text-white 
+                md:font-medium md:text-[14px] md:px-6 md:py-2.5 px-3 py-2 font-small text-[9px]
+                rounded-lg shadow-sm shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-px transition-all duration-150"
               >
                 {loading ? (
                   <>

@@ -425,7 +425,9 @@ console.log(product)
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-emerald-600 shadow-md shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-px active:translate-y-0 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                className="group relative inline-flex items-center gap-2 
+                md:px-5 md:py-2.5 px-3 py-1.5
+                rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-emerald-600 shadow-md shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-px active:translate-y-0 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>

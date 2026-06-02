@@ -196,7 +196,7 @@ const grouped = useMemo<GroupedManufacturer[]>(() => {
           </div>
 
           <div className="rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
-           <button onClick={()=>{router.push('/manufacture')}}>AddManufacture</button>
+           <button className="cursor-pointer" onClick={()=>{router.push('/manufacture')}}>Add Manufacture</button>
           </div>
         </div>
 

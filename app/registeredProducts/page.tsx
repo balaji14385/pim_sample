@@ -55,7 +55,7 @@ export default function ProductsListPage() {
     try {
       const res = await fetch("/api/registeredProducts");
 
-      if (!res.ok) {
+      if (!res.status) {
         throw new Error("Failed to fetch");
       }
 
@@ -108,7 +108,7 @@ const totalSkus = useMemo(
           </div>
 
           <div className="rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
-            <button onClick={()=>{router.push('/products')}}>AddProduct</button>
+            <button className="cursor-pointer" onClick={()=>{router.push('/products')}}>Add Product</button>
           </div>
         </div>
 
@@ -223,7 +223,7 @@ const totalSkus = useMemo(
                     </td>
 
                     <td className="px-4 py-5">
-                      <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-700">
+                      <span className="inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700">
                         {p.categoryName}
                       </span>
                     </td>

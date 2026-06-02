@@ -299,50 +299,60 @@ const handleBlur = (field: FieldName) => () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSuccess("");
+  e.preventDefault();
 
-    setTouched({ categoryId: true, name: true, code: true,});
+  setSuccess("");
 
-    const newErrors = validateAll(values);
-    setErrors(newErrors);
+  setTouched({
+    categoryId: true,
+    name: true,
+    code: true,
+  });
 
-    if (hasErrors(newErrors)) {
-      setStatusMsg("Please fix the errors above before saving.");
-      setTimeout(() => setStatusMsg(""), 3500);
-      return;
+  const newErrors = validateAll(values);
+  setErrors(newErrors);
+
+  if (hasErrors(newErrors)) {
+    setStatusMsg("Please fix the errors above before saving.");
+    setTimeout(() => setStatusMsg(""), 3500);
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const res = await fetch("/api/subCategories", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    });
+
+    const data = await res.json();
+
+    if (data.status === true) {
+      setSuccess("Category added successfully");
+
+      showToast(
+        "Category saved!",
+        `"${values.name.trim()}" has been added to your catalog.`
+      );
+
+      handleReset();
+    } else {
+      showToast(
+        "Category not saved!",
+        data.message || "Something went wrong"
+      );
     }
-
-    setLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const formData = new FormData();
-      formData.append("name", values.name.trim());
-      formData.append("code", values.code.trim().toUpperCase());
-       console.log(values)
-       let res=await fetch('/api/subCategories',{
-        'method':'post',
-        'headers':{
-            'Content-Type':'application/json',
-
-        },
-        'body':JSON.stringify(values)
-       })
-      const data = await res.json()
-      if (data.status === true) {
-        setSuccess("Category added successfully");
-        showToast( "Category saved!", `"${values.name.trim()}" has been added to your catalog.`
-        );
-        handleReset();
-        return ;
-      }
-    showToast( "Category not saved!", `${data.message}`);
-    } catch(error:any) {
-      console.log(error.message)
-      alert("Failed to save category");
-    }
+  } catch (error: any) {
+    console.error(error);
+    alert("Failed to save category");
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
@@ -518,7 +528,9 @@ const handleBlur = (field: FieldName) => () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[.99] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-[14px] px-6 py-2.5 rounded-lg shadow-sm shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-px transition-all duration-150"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[.99] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium 
+                md:text-[14px] md:px-5 md:py-2.5 text-[8px] px-3 py-2.5
+                rounded-lg shadow-sm shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-px transition-all duration-150"
               >
                 {loading ? (
                   <>
@@ -539,7 +551,8 @@ const handleBlur = (field: FieldName) => () => {
                 type="button"
                 onClick={handleReset}
                 disabled={loading}
-                className="flex items-center gap-1.5 bg-transparent text-slate-500 hover:text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed font-normal text-[14px] px-5 py-2.5 rounded-lg transition-all duration-150"
+                className="flex items-center gap-1.5 bg-transparent text-slate-500 hover:text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed font-normal 
+                text-[14px] px-5 py-2.5 rounded-lg transition-all duration-150"
               >
                 <Icon d={ICONS.x} size={13} sw={2} />
                 Cancel

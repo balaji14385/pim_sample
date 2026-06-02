@@ -56,7 +56,7 @@ export default function Sidebar({
   return (
     <>
       {/* Mobile Header */}
-      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between border-b bg-white px-4 md:hidden">
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between bg-white px-3 md:hidden">
         <button
           onClick={() => setMobileOpen(true)}
         >
@@ -86,7 +86,6 @@ export default function Sidebar({
           top-0
           z-50
           h-screen
-          border-r
           bg-white
           shadow-sm
           transition-all
@@ -108,7 +107,7 @@ export default function Sidebar({
         `}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 border-b px-4 py-5">
+        <div className="flex items-center gap-3 px-4 py-5">
           <Image
             src="/boxaio-logo.png"
             alt="BOXAIO"
@@ -171,9 +170,9 @@ export default function Sidebar({
         {/* Collapse */}
        <button
     onClick={() => setOpen((v) => !v)}
-    className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
+    className="flex w-full items-center justify-center absolute bottom-0 text-lg gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 font-semibold text-slate-600 transition hover:bg-slate-100"
   >
-    <Icon d={ICONS.menu} size={14} />
+    <Icon d={ICONS.menu} size={18} />
           {open ? "Collapse" : "Expand"}
         </button>
       </aside>
