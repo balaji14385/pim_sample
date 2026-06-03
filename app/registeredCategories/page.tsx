@@ -40,19 +40,19 @@ export default function CategoryListPage() {
   const [rows, setRows] = useState<CategoryRow[]>([]);
   const [search, setSearch] = useState("");
   const [industryFilter, setIndustryFilter] = useState<string>("ALL");
-  const router=useRouter()
-  useEffect(()=>{
-   async function disCat() {
-    try {
-      let res = await fetch("/api/registeredCategories");
-      let data = await res.json();
-      setRows(data.data)
-    } catch (error:any) {
+  const router = useRouter()
+  useEffect(() => {
+    async function disCat() {
+      try {
+        let res = await fetch("/api/registeredCategories");
+        let data = await res.json();
+        setRows(data.data)
+      } catch (error: any) {
         console.log(error.message)
+      }
     }
-   }
-   disCat()
-  },[])
+    disCat()
+  }, [])
   console.log(rows)
   // Group by category (so each category lists all its sub-categories)
   const grouped = useMemo<GroupedCategory[]>(() => {
@@ -61,25 +61,26 @@ export default function CategoryListPage() {
       const key = `${r.categoryCode}|${r.categoryName}`;
       const existing = map.get(key);
       if (existing) {
-       if (
-  r.subCategory &&
-  r.subCategory !== "null" &&
-  r.subCategory.trim() !== "" &&
-  !existing.subCategories.includes(r.subCategory)
-) {
-  existing.subCategories.push(r.subCategory);
-}
+        if (
+          r.subCategory &&
+          r.subCategory !== "null" &&
+          r.subCategory.trim() !== "" &&
+          !existing.subCategories.includes(r.subCategory)
+        ) {
+          existing.subCategories.push(r.subCategory);
+        }
       } else {
         map.set(key, {
           categoryName: r.categoryName,
           categoryCode: r.categoryCode,
           industryName: r.industryName,
-subCategories:
-  r.subCategory &&
-  r.subCategory !== "null" &&
-  r.subCategory.trim() !== ""
-    ? [r.subCategory]
-    : [],        });
+          subCategories:
+            r.subCategory &&
+              r.subCategory !== "null" &&
+              r.subCategory.trim() !== ""
+              ? [r.subCategory]
+              : [],
+        });
       }
     }
     return Array.from(map.values());
@@ -104,14 +105,14 @@ subCategories:
     });
   }, [grouped, search, industryFilter]);
 
-const totalSubCategories = useMemo(() => {
-  return rows.filter(
-    (r) =>
-      r.subCategory &&
-      r.subCategory !== "null" &&
-      r.subCategory.trim() !== ""
-  ).length;
-}, [rows]);
+  const totalSubCategories = useMemo(() => {
+    return rows.filter(
+      (r) =>
+        r.subCategory &&
+        r.subCategory !== "null" &&
+        r.subCategory.trim() !== ""
+    ).length;
+  }, [rows]);
   return (
     <div className="min-h-screen px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-7xl">
@@ -125,8 +126,15 @@ const totalSubCategories = useMemo(() => {
               All registered categories with their sub-categories and industry mapping
             </p>
           </div>
-          <div className="rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
-           <button className="cursor-pointer" onClick={()=>{router.push('/categories')}}>Add Category</button>
+          <div className="flex gap-4">
+            <div className=" rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
+
+            <button className="cursor-pointer" onClick={() => { router.push('/industry') }}>Add Industry</button>
+          </div>
+          <div className=" rounded-xl border bg-gradient-to-r from-green-500 to-emerald-600 bg-clip text-white px-4 py-2 shadow-sm">
+
+            <button className="cursor-pointer" onClick={() => { router.push('/categories') }}>Add Category</button>
+          </div>
           </div>
         </div>
 

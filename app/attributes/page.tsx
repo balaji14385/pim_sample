@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+
 import { useState,useEffect, ChangeEvent, FocusEvent, FormEvent } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -29,17 +29,14 @@ interface FormErrors {
   code?: string;
   dataType?: string;
 }
-type Category = {
-  id: number;
-  name: string;
-};
+
 type TextFieldName = "name" | "code";
 type SelectFieldName = "categoryId" | "dataType";
 type FieldName = TextFieldName | SelectFieldName;
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const ATTR_NAME_REGEX = /^[A-Za-z][A-Za-z0-9 _-]*$/;
-const ATTR_CODE_REGEX = /^[a-z][a-z0-9_]*$/;
+const ATTR_CODE_REGEX = /^[A-Z][A-Z0-9]*$/;
 
 const INITIAL_VALUES: FormValues = {
   categoryId: "",
@@ -89,8 +86,7 @@ function validateField(field: FieldName, value: string): string {
       if (v.length < 2) return "Minimum 2 characters required";
       if (v.length > 40) return "Maximum 40 characters allowed";
       if (!ATTR_CODE_REGEX.test(v))
-        return "Lowercase letters, numbers, _ only (start with a letter)";
-      return "";
+        return "Uppercase letters and numbers only (start with an uppercase letter)";      return "";
     case "dataType":
       if (!v) return "Data Type is required";
       return "";
@@ -173,20 +169,19 @@ export default function AddAttributePage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
   const [loading, setLoading] = useState(false);
-  const [category,setCategory]=useState<Category[]>([]);
-  
-  useEffect(()=>{
-     async function clist(){
+  const [category,setCategory]=useState([])
+   async function clist(){
         try {
            let data= await fetch('/api/categoriesList')
          let finalData=await data.json()
           setCategory(finalData.data)
-        } catch (error:any) {
+        } catch (error) {
           console.log(error.message)
         }finally {
       setLoading(false);
     }
        }
+  useEffect(()=>{
    clist()
   },[])
   console.log(category)
@@ -222,7 +217,7 @@ export default function AddAttributePage() {
   const handleTextChange =
     (field: TextFieldName) => (e: ChangeEvent<HTMLInputElement>) => {
       let val = e.target.value;
-      if (field === "code") val = val.toLowerCase();
+      if (field === "code") val = val.toUpperCase();
       setValues((prev) => {
         const next = { ...prev, [field]: val };
         if (touched[field]) {
@@ -347,23 +342,7 @@ export default function AddAttributePage() {
       />
 
       {/* Top brand bar */}
-      <header className="border-b border-slate-200/70 bg-white/70 backdrop-blur-md">
-        <div className="max-w-[760px] mx-auto w-full px-6 py-4 flex items-center gap-3">
-          <img
-            src="/boxaio-logo.png"
-            alt="BOXAIO"
-            className="h-9 w-9 object-contain"
-          />
-          <div className="min-w-0">
-            <h1 className="bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
-              BOXAIO
-            </h1>
-            <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400 -mt-0.5">
-              PIM Enterprise
-            </p>
-          </div>
-        </div>
-      </header>
+     
 
       <main className="flex-1 max-w-[700px] mx-auto w-full px-6 pt-9 pb-20">
         {/* Page header */}
@@ -507,7 +486,7 @@ export default function AddAttributePage() {
                       id="code"
                       type="text"
                       name="code"
-                      placeholder="e.g. screen_size"
+                      placeholder="e.g. SCREENSIZE"
                       value={values.code}
                       onChange={handleTextChange("code")}
                       onBlur={handleBlur("code")}
@@ -529,7 +508,7 @@ export default function AddAttributePage() {
                     </p>
                   ) : (
                     <p className="text-[11px] font-mono text-slate-400">
-                      lowercase, numbers, _ only
+                      uppercase, numbers, _ only
                     </p>
                   )}
                 </div>
@@ -674,7 +653,7 @@ export default function AddAttributePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative inline-flex items-center gap-2
+                 className="group relative inline-flex items-center gap-2
                  md:px-5 md:py-2.5 px-2 py-1.5 font-small rounded-lg text-sm md:font-semibold 
                  text-white bg-gradient-to-r from-green-500 to-emerald-600 shadow-md shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-px active:translate-y-0 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
               >

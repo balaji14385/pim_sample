@@ -84,7 +84,10 @@ export default function BrandsPage() {
     () => new Set(brands.map((b) => b.companyName)).size,
     [brands]
   );
-
+ function getData(e:Brand)
+ {
+  console.log(e)
+ }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
       <div className="mx-auto max-w-7xl">
@@ -195,7 +198,9 @@ export default function BrandsPage() {
                           {initials(brand.brandName)}
                         </div>
                         <div>
-                          <h3 className="px-3 py-2 text-sm text-left font-semibold">{brand.brandName}</h3>
+                          <h3 className="px-3 py-2 text-sm text-left font-semibold">
+                              <button onClick={()=>{getData(brand)}} className="cursor-pointer m-0 p-0">{brand.brandName}</button>
+                            </h3>
                           {/* <p className="max-w-[150px] truncate text-xs text-slate-500">
                             {brand.logo || "No logo"}
                           </p> */}
@@ -204,7 +209,7 @@ export default function BrandsPage() {
                     </td>
 
                     <td className="px-4 py-5">
-                      {brand.parentBrandName ? (
+                    {brand.parentBrandName ? (
                         <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
                           {brand.parentBrandName}
                         </span>

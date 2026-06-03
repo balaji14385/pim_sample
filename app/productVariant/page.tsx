@@ -267,23 +267,6 @@ console.log(product)
       />
 
       {/* Top brand bar */}
-      <header className="border-b border-slate-200/70 bg-white/70 backdrop-blur-md">
-        <div className="max-w-[760px] mx-auto w-full px-6 py-4 flex items-center gap-3">
-        <img
-          src="/boxaio-logo.png"
-          alt="BOXAIO"
-          className="h-9 w-9 object-contain"
-        />          
-          <div className="min-w-0">
-            <h1 className="bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-lg font-extrabold tracking-tight text-transparent">
-              BOXAIO
-            </h1>
-            <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400 -mt-0.5">
-              PIM Enterprise
-            </p>
-          </div>
-        </div>
-      </header>
 
       <main className="flex-1 max-w-[700px] mx-auto w-full px-6 pt-9 pb-20">
         {/* Page header */}

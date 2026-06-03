@@ -35,13 +35,14 @@ const ICONS = {
   products:
     "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z",
   menu: "M3 6h18M3 12h18M3 18h18",
-} as const;
-
+  productsData:
+  "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.3 7l8.7 5 8.7-5",} as const;
 const MENU = [
   { to: "/registeredManufacturer", label: "Manufacturers", icon: ICONS.manufacturers },
   { to: "/registeredBrands", label: "Brands", icon: ICONS.brands },
   { to: "/registeredCategories", label: "Categories", icon: ICONS.categories },
   { to: "/registeredProducts", label: "Products", icon: ICONS.products },
+  { to: "/productsData", label: "ProductsData", icon: ICONS.productsData },
 ] as const;
 
 export default function Sidebar({
