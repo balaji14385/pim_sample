@@ -10,6 +10,7 @@ const pb = alias(brands, "parentBrands");
 
         const data = await db
             .select({
+                id:brands.id,
                 logo: brands.logoUrl,
 
                 brandName: brands.name,

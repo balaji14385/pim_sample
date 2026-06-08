@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 type Brand = {
+  id:string
   logo: string;
   brandName: string;
   parentBrandName?: string;
@@ -193,13 +194,15 @@ export default function BrandsPage() {
                     className="group transition-all duration-300 hover:bg-emerald-50/40"
                   >
                     <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 font-bold text-white shadow">
+                      <div className="flex items-center gap-2">
+                        {brand.logo ?  <div className="flex h-20 w-13 items-center justify-center">
+                          <img src={brand.logo} alt="" />
+                        </div> : <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 font-bold text-white shadow">
                           {initials(brand.brandName)}
-                        </div>
+                        </div>}
                         <div>
                           <h3 className="px-3 py-2 text-sm text-left font-semibold">
-                              <button onClick={()=>{getData(brand)}} className="cursor-pointer m-0 p-0">{brand.brandName}</button>
+                              <button onClick={()=>{router.push(`/brands/${brand.id}`)}} className="cursor-pointer m-0 p-0">{brand.brandName}</button>
                             </h3>
                           {/* <p className="max-w-[150px] truncate text-xs text-slate-500">
                             {brand.logo || "No logo"}

@@ -23,7 +23,14 @@ interface FormErrors {
 }
 
 type FieldName = keyof FormValues;
-
+interface brands{
+  id:string;
+  company_name:string
+}
+interface parentBrands{
+  id:string;
+  name:string
+}
 // ─── OPTION LISTS ─────────────────────────────────────────────────────────────
 
 const BRAND_TYPES = [
@@ -505,8 +512,8 @@ export default function AddBrandPage() {
   const [toast, setToast] = useState<{ title: string; subtitle: string } | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [brandList,setBrandList]=useState([])
-  const [parentBrand,setParentBrand]=useState([])
+  const [brandList,setBrandList]=useState<brands[]>([])
+  const [parentBrand,setParentBrand]=useState<parentBrands[]>([])
   async function blist(){
        let data= await fetch('/api/manufacturerList')
        let finalData=await data.json()
@@ -629,7 +636,7 @@ export default function AddBrandPage() {
       }
       showToast("Brand not saved!", `${data.message}`);
 
-  } catch (error:unknown) {
+  } catch (error:any) {
     console.log(error.message)
   }
    

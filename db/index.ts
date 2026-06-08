@@ -6,5 +6,4 @@ let sql=postgres(process.env.DATABASE_URL! ,
     ssl: "require"
   }
 )
-console.log('db')
 export let db=drizzle(sql)

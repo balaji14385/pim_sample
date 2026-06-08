@@ -169,13 +169,13 @@ export default function AddAttributePage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
   const [loading, setLoading] = useState(false);
-  const [category,setCategory]=useState([])
+  const [category,setCategory]=useState<CategoryOption []>([])
    async function clist(){
         try {
            let data= await fetch('/api/categoriesList')
          let finalData=await data.json()
           setCategory(finalData.data)
-        } catch (error) {
+        } catch (error:any) {
           console.log(error.message)
         }finally {
       setLoading(false);
