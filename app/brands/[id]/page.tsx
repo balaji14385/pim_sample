@@ -103,9 +103,11 @@ const list = Array.isArray(data?.data)
   }, [products, query]);
  
   const totalSkus = rows.reduce((a, r) => a + (Number(r.skuCount) || 0), 0);
-const heading = brandMeta.brandName || "…";
+  const heading = brandMeta.brandName || "…";
   const companyName = brandMeta.companyName || "—";
- 
+  const totalVariants = rows.filter(
+    (r) => r.variantName && r.variantName.trim() !== ""
+  ).length;
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
       <div className="mx-auto max-w-6xl">
@@ -127,7 +129,7 @@ const heading = brandMeta.brandName || "…";
                   {products.length} Product{products.length === 1 ? "" : "s"}
                 </span>
                 <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700">
-                  {rows.length} Variant{rows.length === 1 ? "" : "s"}
+                  {totalVariants} Variant{totalVariants === 1 ? "" : "s"}
                 </span>
                 <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
                   {totalSkus} SKU{totalSkus === 1 ? "" : "s"}
@@ -138,18 +140,6 @@ const heading = brandMeta.brandName || "…";
  
           {/* Stats */}
           <div className="grid grid-cols-3 divide-x divide-slate-100 border-t border-slate-100">
-            <div className="px-6 py-5 text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Products</p>
-              <p className="mt-1 text-2xl font-extrabold text-emerald-600">{products.length}</p>
-            </div>
-            <div className="px-6 py-5 text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Variants</p>
-              <p className="mt-1 text-2xl font-extrabold text-emerald-600">{rows.length}</p>
-            </div>
-            <div className="px-6 py-5 text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Total SKUs</p>
-              <p className="mt-1 text-2xl font-extrabold text-emerald-600">{totalSkus}</p>
-            </div>
           </div>
         </div>
  
@@ -198,7 +188,18 @@ const heading = brandMeta.brandName || "…";
                     <div>
                       <h3 className="text-sm font-semibold text-slate-800">{p.name}</h3>
                       <p className="text-xs text-slate-500">
-                        {p.variants.length} variant{p.variants.length === 1 ? "" : "s"}
+                        {
+                          p.variants.filter(
+                            (v) => v.variantName && v.variantName.trim() !== ""
+                          ).length
+                        } variant
+                        {
+                          p.variants.filter(
+                            (v) => v.variantName && v.variantName.trim() !== ""
+                          ).length === 1
+                          ? ""
+                          : "s"
+                        }
                       </p>
                     </div>
                   </div>

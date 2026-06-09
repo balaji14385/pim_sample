@@ -1,8 +1,10 @@
 "use client"
 import { useState,useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface ProductForm {
+  id:string;
   name: string;
   brandId: string;
   subCategoryId: string;
@@ -152,6 +154,7 @@ function InputField({
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function AddProductPage() {
   const [form, setForm] = useState<ProductForm>({
+    id:"",
     name: "",
     brandId: "",
      subCategoryId: "",
@@ -166,6 +169,7 @@ export default function AddProductPage() {
   const [saving, setSaving] = useState(false);
   const [brandIdList,setbrandIdList]=useState<brand[]>([])
   const [sctgryList,setSctgryList]=useState<brand[]>([])
+  const router=useRouter()
     useEffect(()=>{
   
        async function blist(){
@@ -254,7 +258,7 @@ function handleBlur(key: keyof ProductForm) {
 }
 
   function handleReset() {
-    setForm({ name: "", brandId: "",   subCategoryId: "",
+    setForm({id:"", name: "", brandId: "",   subCategoryId: "",
     productCode: "", description: "", launchDate: "" });
     setErrors({});
     setTouched({});

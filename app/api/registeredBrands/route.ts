@@ -3,9 +3,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { brands, manufacturers, products } from "@/db/schema";
 import { db } from '@/db/index';
 import { alias } from "drizzle-orm/pg-core";
+import {redis} from '@/lib/redis'
 
 export async function GET() {
     try {
+    let cached=await redis.get('registeredBrands')
+    if(cached)
+    {
+        return NextResponse.json({
+            status: true,
+            message: "successfully fetch data",
+            data:cached
+        }, { status: 200 })
+    }
 const pb = alias(brands, "parentBrands");
 
         const data = await db
@@ -59,6 +69,7 @@ const pb = alias(brands, "parentBrands");
                 brands.status,
                 brands.createdAt
             );
+            await redis.set('registeredBrands',data)
         return NextResponse.json({
             status: true,
             message: "successfully fetch data",

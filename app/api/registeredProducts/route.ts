@@ -6,14 +6,15 @@ export async function GET() {
     try {
         const data = await db
   .select({
+    id:products.id,
     productName: products.name,
     productCode: products.productCode,
     brandName: brands.name,
     categoryName: categories.name,
-    variantCount: countDistinct(productVariants.id),
+    variantsCount: countDistinct(productVariants.id),
     skuCount: countDistinct(skus.id),
     status:products.status,
-    created:products.createdAt
+    createdAt:products.createdAt
   })
   .from(products)
 
