@@ -1,7 +1,8 @@
-import { eq, sql,countDistinct } from "drizzle-orm";
+import { eq, sql,countDistinct,and } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { brands, products,productVariants,subCategories,skus,categories } from "@/db/schema";
 import { db } from '@/db/index';
+import { redis } from "@/lib/redis";
 export async function GET() {
     try {
         const data = await db
@@ -35,12 +36,13 @@ export async function GET() {
 
   .leftJoin(
     productVariants,
-    eq(productVariants.productId, products.id)
+    and(eq(productVariants.productId, products.id),eq(productVariants.status,true))
   )
 
   .leftJoin(
     skus,
-    eq(skus.variantId, productVariants.id)
+    and(eq(skus.variantId, productVariants.id),eq(skus.status,true)
+)
   )
 
   .groupBy(
@@ -49,7 +51,13 @@ export async function GET() {
     products.productCode,
     brands.name,
     categories.name
-  );
+  )
+  .where(eq(products.status,true))
+    try {
+                await redis.set('registeredProducts',data)
+               } catch (redisError) {
+                   console.error("Failed to update Redis cache:", redisError);
+               }
         return NextResponse.json({
             status: true,
             message: "successfully fetch data",

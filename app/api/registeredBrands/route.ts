@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, sql,and,countDistinct } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { brands, manufacturers, products } from "@/db/schema";
 import { db } from '@/db/index';
@@ -17,7 +17,6 @@ export async function GET() {
         }, { status: 200 })
     }
 const pb = alias(brands, "parentBrands");
-
         const data = await db
             .select({
                 id:brands.id,
@@ -33,9 +32,7 @@ const pb = alias(brands, "parentBrands");
 
                 companyName: manufacturers.companyName,
 
-                productCount: sql<number>`
-        count(${products.brandId})
-    `,
+               productCount: countDistinct(products.id),
 
                 status: brands.status,
 
@@ -45,19 +42,18 @@ const pb = alias(brands, "parentBrands");
 
             .innerJoin(
                 manufacturers,
-                eq(manufacturers.id, brands.manufacturerId)
+                and(eq(manufacturers.id, brands.manufacturerId),eq(manufacturers.status,true))
             )
 
             .leftJoin(
                 pb,
-                eq(pb.id, brands.parentBrandId)
+                and( eq(pb.id, brands.parentBrandId),eq(pb.status,true))
             )
 
             .leftJoin(
                 products,
-                eq(products.brandId, brands.id)
+                and(eq(products.brandId, brands.id),eq(products.status,true))
             )
-
             .groupBy(
                 brands.id,
                 brands.logoUrl,
@@ -68,8 +64,13 @@ const pb = alias(brands, "parentBrands");
                 manufacturers.companyName,
                 brands.status,
                 brands.createdAt
-            );
-            await redis.set('registeredBrands',data)
+            )
+            .where(eq(brands.status,true))
+            try {
+             await redis.set('registeredBrands',data)
+            } catch (redisError) {
+                console.error("Failed to update Redis cache:", redisError);
+            }
         return NextResponse.json({
             status: true,
             message: "successfully fetch data",

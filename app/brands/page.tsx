@@ -1,11 +1,11 @@
 "use client"
-import { useState,useEffect, useRef, ChangeEvent, FocusEvent, DragEvent } from "react";
+import { useState, useEffect, useRef, ChangeEvent, FocusEvent, DragEvent } from "react";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 
 interface FormValues {
- name: string;
-  brandCode:string;
+  name: string;
+  brandCode: string;
   brandType: string;
   manufacturerId: string;
   parentBrand: string;
@@ -14,8 +14,8 @@ interface FormValues {
 }
 
 interface FormErrors {
- name?: string;
-  brandCode?:string;
+  name?: string;
+  brandCode?: string;
   brandType?: string;
   manufacturerId?: string;
   description?: string;
@@ -23,60 +23,17 @@ interface FormErrors {
 }
 
 type FieldName = keyof FormValues;
-interface brands{
-  id:string;
-  company_name:string
+
+interface brands {
+  id: string;
+  company_name: string;
 }
-interface parentBrands{
-  id:string;
-  name:string
+interface parentBrands {
+  id: string;
+  name: string;
 }
+
 // ─── OPTION LISTS ─────────────────────────────────────────────────────────────
-
-const BRAND_TYPES = [
-  { value: "hair_care",        label: "Hair Care" },
-  { value: "skin_care",        label: "Skin Care" },
-  { value: "oral_care",        label: "Oral Care" },
-  { value: "body_care",        label: "Body Care" },
-  { value: "color_cosmetics",  label: "Color Cosmetics" },
-  { value: "fragrances",       label: "Fragrances" },
-  { value: "baby_care",        label: "Baby Care" },
-  { value: "men_grooming",     label: "Men's Grooming" },
-  { value: "wellness",         label: "Wellness" },
-  { value: "food_beverage",    label: "Food & Beverage" },
-  { value: "home_care",        label: "Home Care" },
-  { value: "detergent",        label: "Detergent"},
-  { value: "electronics",       label: "Electronics"},
-  { value: "other",            label: "Other" },
-];
-
-const MANUFACTURERS = [
-  { value: "hul",       label: "HUL – Hindustan Unilever Ltd." },
-  { value: "pg",        label: "P&G – Procter & Gamble" },
-  { value: "itc",       label: "ITC Limited" },
-  { value: "marico",    label: "Marico Limited" },
-  { value: "dabur",     label: "Dabur India Ltd." },
-  { value: "colgate",   label: "Colgate-Palmolive" },
-  { value: "emami",     label: "Emami Limited" },
-  { value: "himalaya",  label: "Himalaya Drug Company" },
-  { value: "patanjali", label: "Patanjali Ayurved" },
-  { value: "other",     label: "Other" },
-];
-
-const PARENT_BRANDS = [
-  { value: "none",            label: "None" },
-  { value: "dove",            label: "Dove" },
-  { value: "lux",             label: "Lux" },
-  { value: "clinic_plus",     label: "Clinic Plus" },
-  { value: "sunsilk",         label: "Sunsilk" },
-  { value: "pepsodent",       label: "Pepsodent" },
-  { value: "close_up",        label: "Close-Up" },
-  { value: "glow_lovely",     label: "Glow & Lovely" },
-  { value: "lakme",           label: "Lakmé" },
-  { value: "pantene",         label: "Pantene" },
-  { value: "head_shoulders",  label: "Head & Shoulders" },
-];
-
 
 const COUNTRIES = [
   { value: "AF", label: "Afghanistan" },
@@ -210,7 +167,7 @@ const COUNTRIES = [
   { value: "VN", label: "Vietnam" },
   { value: "YE", label: "Yemen" },
   { value: "ZM", label: "Zambia" },
-  { value: "ZW", label: "Zimbabwe" }
+  { value: "ZW", label: "Zimbabwe" },
 ];
 
 const ALLOWED_LOGO_TYPES = ["image/png", "image/jpeg", "image/svg+xml", "image/webp"];
@@ -219,8 +176,8 @@ const MAX_LOGO_SIZE_MB = 2;
 // ─── INITIAL STATE ────────────────────────────────────────────────────────────
 
 const INITIAL_VALUES: FormValues = {
- name: "",
-  brandCode:"",
+  name: "",
+  brandCode: "",
   brandType: "",
   manufacturerId: "",
   parentBrand: "none",
@@ -252,6 +209,7 @@ function validateField(field: FieldName | "logo", value: string, logoFile?: File
 
     case "manufacturerId":
       return v ? "" : "Manufacturer is required.";
+
     case "description":
       if (!v) return "";
       if (v.length > 500) return "Must be 500 characters or fewer.";
@@ -272,12 +230,12 @@ function validateField(field: FieldName | "logo", value: string, logoFile?: File
 
 function validateAll(values: FormValues, logoFile: File | null): FormErrors {
   return {
-   name:    validateField("name",    values.name),
-    brandCode:    validateField("brandCode",    values.brandCode),
-    brandType:    validateField("brandType",    values.brandType),
+    name: validateField("name", values.name),
+    brandCode: validateField("brandCode", values.brandCode),
+    brandType: validateField("brandType", values.brandType),
     manufacturerId: validateField("manufacturerId", values.manufacturerId),
-    description:  validateField("description",  values.description),
-    logo:         validateField("logo",         "", logoFile),
+    description: validateField("description", values.description),
+    logo: validateField("logo", "", logoFile),
   };
 }
 
@@ -285,216 +243,114 @@ function hasErrors(errors: FormErrors): boolean {
   return Object.values(errors).some(Boolean);
 }
 
-// ─── PROGRESS ────────────────────────────────────────────────────────────────
+// ─── PROGRESS ─────────────────────────────────────────────────────────────────
 
 function calcProgress(values: FormValues, logoFile: File | null): number {
   let score = 0;
   if (values.name.trim() && !validateField("name", values.name)) score += 25;
-  if (values.brandCode.trim() && !validateField("brandCode",values.brandCode))  score += 25;
-  if (values.brandType)    score += 25;
+  if (values.brandCode.trim() && !validateField("brandCode", values.brandCode)) score += 25;
+  if (values.brandType) score += 25;
   if (values.manufacturerId) score += 25;
   if (values.description.trim() && !validateField("description", values.description)) score += 5;
   if (logoFile && !validateField("logo", "", logoFile)) score += 5;
   return Math.min(100, score);
 }
 
-// ─── SMALL COMPONENTS ─────────────────────────────────────────────────────────
+// ─── DESIGN ATOMS (matching Registered Brands page) ───────────────────────────
 
-function RequiredStar() {
-  return <span className="text-red-500 text-[13px] leading-none">*</span>;
-}
-
-function OptionalBadge() {
+// FieldLabel — matches the list page's edit modal atom
+function FieldLabel({ required, optional, children }: {
+  required?: boolean; optional?: boolean; children: React.ReactNode;
+}) {
   return (
-    <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 uppercase tracking-wider normal-case">
-      Optional
-    </span>
-  );
-}
-
-interface FieldLabelProps {
-  htmlFor?: string;
-  required?: boolean;
-  optional?: boolean;
-  children: React.ReactNode;
-}
-
-function FieldLabel({ htmlFor, required, optional, children }: FieldLabelProps) {
-  return (
-    <label
-      htmlFor={htmlFor}
-      className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[.07em] text-slate-500"
-    >
+    <label className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-slate-400">
       {children}
-      {required && <RequiredStar />}
-      {optional && <OptionalBadge />}
+      {required && <span className="text-emerald-500 text-sm leading-none">*</span>}
+      {optional && (
+        <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 border border-slate-200 rounded px-1 py-0.5 uppercase tracking-wider normal-case">
+          Optional
+        </span>
+      )}
     </label>
   );
 }
 
-interface FieldErrorProps { message?: string }
-function FieldError({ message }: FieldErrorProps) {
+// FieldError — matches the list page's circle-bang error atom
+function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p className="flex items-center gap-1 text-[11px] text-red-600 animate-in fade-in slide-in-from-top-1 duration-150" role="alert">
-      <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-      </svg>
+    <p className="flex items-center gap-1 text-[10px] text-red-500 font-medium">
+      <span className="flex-shrink-0 w-3 h-3 rounded-full border border-red-400 flex items-center justify-center text-[8px] font-bold leading-none">!</span>
       {message}
     </p>
   );
 }
 
-interface CheckIconProps { show: boolean }
-function CheckIcon({ show }: CheckIconProps) {
+// CheckMark — matches the list page's edit modal green tick
+function CheckMark({ show }: { show: boolean }) {
   if (!show) return null;
   return (
     <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-emerald-500 pointer-events-none">
-      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 6L9 17l-5-5"/>
       </svg>
     </span>
   );
 }
 
-// Shared input class builder
+// inputCls — matches the Brands list / edit modal exactly
 function inputCls(state: "error" | "ok" | ""): string {
-  const base =
-    "w-full bg-slate-50 border rounded-lg text-[13.5px] text-slate-800 placeholder:text-slate-300 placeholder:text-[13px] outline-none transition-all duration-200 pl-9 pr-3 py-[9px] font-sans hover:bg-white hover:border-slate-300";
-  if (state === "error")
-    return `${base} border-red-400 ring-2 ring-red-400/10 bg-red-50 hover:!bg-red-50 hover:!border-red-400`;
-  if (state === "ok")
-    return `${base} border-emerald-400 ring-2 ring-emerald-400/10 bg-white hover:!bg-white hover:!border-emerald-400`;
-  return `${base} border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white`;
+  const base = "w-full bg-white border rounded-md text-xs text-slate-800 placeholder-slate-300 outline-none transition-all duration-200 pl-9 pr-3 py-2 focus:ring-2";
+  if (state === "error") return `${base} border-red-300 bg-red-50 focus:ring-red-200 focus:border-red-400`;
+  if (state === "ok")    return `${base} border-emerald-400 focus:ring-emerald-400/30 focus:border-emerald-400`;
+  return `${base} border-slate-200 hover:border-slate-300 focus:ring-emerald-400/30 focus:border-emerald-400`;
 }
 
 function selectCls(state: "error" | "ok" | ""): string {
-  return inputCls(state) + " cursor-pointer pr-8 appearance-none";
+  return inputCls(state) + " appearance-none cursor-pointer pr-8";
 }
+
+// SectionDivider — matches the Brands edit modal divider
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-2 my-1">
+      <div className="h-px flex-1 bg-slate-100"/>
+      <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400 px-2">{label}</span>
+      <div className="h-px flex-1 bg-slate-100"/>
+    </div>
+  );
+}
+
+// Caret SVG for selects
+const caretBg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`;
+
+// Inline SVG icons (same as Brands list)
+const TagIcon     = () => <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>;
+const GridIcon    = () => <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>;
+const BldgIcon    = () => <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18M9 21V7l6-4v18M9 11h6M9 15h6"/></svg>;
+const UpArrowIcon = () => <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>;
+const GlobeIcon   = () => <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>;
+const DocIcon     = () => <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>;
+const UploadIcon  = () => <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>;
 
 // ─── TOAST ────────────────────────────────────────────────────────────────────
 
 function Toast({ title, subtitle }: { title: string; subtitle: string }) {
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-start gap-3 bg-white border border-green-200 rounded-xl px-5 py-4 shadow-xl animate-in slide-in-from-bottom-3 fade-in duration-300 min-w-[260px] max-w-[300px]">
-      <div className="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0 text-green-600">
-        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+    <div
+      className="fixed bottom-6 right-6 z-50 flex items-start gap-3 bg-white border border-emerald-200 rounded-xl px-5 py-4 shadow-xl min-w-[260px] max-w-[300px]"
+      style={{ animation: "toastIn 0.25s ease-out" }}
+    >
+      <style>{`@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0 text-emerald-600">
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 6L9 17l-5-5"/>
         </svg>
       </div>
       <div>
-        <p className="text-[12.5px] font-semibold text-slate-800">{title}</p>
-        <p className="text-[11.5px] text-slate-500 mt-0.5 leading-relaxed">{subtitle}</p>
+        <p className="text-sm font-semibold text-slate-800">{title}</p>
+        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{subtitle}</p>
       </div>
-    </div>
-  );
-}
-
-// ─── ICON COMPONENTS ─────────────────────────────────────────────────────────
-
-function TagIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-      <line x1="7" y1="7" x2="7.01" y2="7"/>
-    </svg>
-  );
-}
-function GridIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
-    </svg>
-  );
-}
-function BuildingIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 21h18M9 21V7l6-4v18M9 11h6M9 15h6"/>
-    </svg>
-  );
-}
-function ArrowUpIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 5v14M5 12l7-7 7 7"/>
-    </svg>
-  );
-}
-function GlobeIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-    </svg>
-  );
-}
-function DocIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-    </svg>
-  );
-}
-function UploadIcon() {
-  return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="17 8 12 3 7 8"/>
-      <line x1="12" y1="3" x2="12" y2="15"/>
-    </svg>
-  );
-}
-function SaveIcon() {
-  return (
-    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-      <path d="M17 21v-8H7v8M7 3v5h8"/>
-    </svg>
-  );
-}
-
-// Select with caret arrow using inline SVG background
-function SelectField({
-  id, value, onChange, onBlur, state, placeholder, children,
-}: {
-  id: string; value: string;
-  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-  onBlur: (e: FocusEvent<HTMLSelectElement>) => void;
-  state: "error" | "ok" | ""; placeholder?: string; children: React.ReactNode;
-}) {
-  return (
-    <select
-      id={id}
-      value={value}
-      onChange={onChange}
-      onBlur={onBlur}
-      className={selectCls(state)}
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "right 10px center",
-        paddingRight: "28px",
-      }}
-    >
-      {placeholder && <option value="">{placeholder}</option>}
-      {children}
-    </select>
-  );
-}
-
-// ─── SECTION DIVIDER ─────────────────────────────────────────────────────────
-
-function SectionLabel({ children }: { children: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-1">
-      <span className="text-[10px] font-semibold uppercase tracking-[.1em] text-slate-400 whitespace-nowrap">
-        {children}
-      </span>
-      <div className="flex-1 h-px bg-slate-100" />
     </div>
   );
 }
@@ -502,36 +358,39 @@ function SectionLabel({ children }: { children: string }) {
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function AddBrandPage() {
-  const [values, setValues] = useState<FormValues>(INITIAL_VALUES);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Partial<Record<FieldName | "logo", boolean>>>({});
-  const [loading, setLoading] = useState(false);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [values, setValues]         = useState<FormValues>(INITIAL_VALUES);
+  const [errors, setErrors]         = useState<FormErrors>({});
+  const [touched, setTouched]       = useState<Partial<Record<FieldName | "logo", boolean>>>({});
+  const [loading, setLoading]       = useState(false);
+  const [logoFile, setLogoFile]     = useState<File | null>(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [toast, setToast] = useState<{ title: string; subtitle: string } | null>(null);
-  const [statusMsg, setStatusMsg] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [brandList,setBrandList]=useState<brands[]>([])
-  const [parentBrand,setParentBrand]=useState<parentBrands[]>([])
-  async function blist(){
-       let data= await fetch('/api/manufacturerList')
-       let finalData=await data.json()
-        setBrandList(finalData.data)
-             }
-      async function plist(){
-       let data= await fetch('/api/parentBrandList')
-       let finalData=await data.json()
-        setParentBrand(finalData.data)
-             }
-  useEffect(()=>{
-     blist()
-     plist()
-  },[]);  
-  
+  const [toast, setToast]           = useState<{ title: string; subtitle: string } | null>(null);
+  const [statusMsg, setStatusMsg]   = useState("");
+  const fileInputRef                = useRef<HTMLInputElement>(null);
+  const [brandList, setBrandList]   = useState<brands[]>([]);
+  const [parentBrand, setParentBrand] = useState<parentBrands[]>([]);
+
+  async function blist() {
+    let data = await fetch("/api/manufacturerList");
+    let finalData = await data.json();
+    setBrandList(finalData.data);
+  }
+  async function plist() {
+    let data = await fetch("/api/parentBrandList");
+    let finalData = await data.json();
+    setParentBrand(finalData.data);
+  }
+
+  useEffect(() => {
+    blist();
+    plist();
+  }, []);
+
   const progress = calcProgress(values, logoFile);
 
   // ── Field state helper ────────────────────────────────────────────────────
+
   const fieldState = (field: FieldName | "logo"): "error" | "ok" | "" => {
     if (!touched[field]) return "";
     if (field === "logo") {
@@ -545,7 +404,8 @@ export default function AddBrandPage() {
     return "";
   };
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
+  // ── Handlers (all original logic preserved) ───────────────────────────────
+
   const handleChange =
     (field: FieldName) =>
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -566,10 +426,7 @@ export default function AddBrandPage() {
   const processLogoFile = (file: File) => {
     setTouched((prev) => ({ ...prev, logo: true }));
     const err = validateField("logo", "", file);
-    if (err) {
-      setErrors((prev) => ({ ...prev, logo: err }));
-      return;
-    }
+    if (err) { setErrors((prev) => ({ ...prev, logo: err })); return; }
     setLogoFile(file);
     setErrors((prev) => ({ ...prev, logo: "" }));
     const url = URL.createObjectURL(file);
@@ -602,8 +459,8 @@ export default function AddBrandPage() {
 
   const handleSubmit = async () => {
     const allTouched = {
-     name: true,brandCode: true, brandType: true, manufacturerId: true,
-      parentBrand: true,  country: true, description: true, logo: true,
+      name: true, brandCode: true, brandType: true, manufacturerId: true,
+      parentBrand: true, country: true, description: true, logo: true,
     };
     setTouched(allTouched);
     const newErrors = validateAll(values, logoFile);
@@ -616,30 +473,24 @@ export default function AddBrandPage() {
     setLoading(true);
     await new Promise<void>((r) => setTimeout(r, 1500));
     setLoading(false);
-    console.log(values)
-  try {
-            let res=await fetch('/api/brands',{
-        'method':'post',
-        'headers':{
-            'Content-Type':'application/json',
-
-        },
-        'body':JSON.stringify(values)
-       })
-       await plist()
-       let data=await res.json()
-      if(data.status==true)
-      {
-         showToast("Brand saved!", `"${values.name.trim()}" has been added to your catalog.`);
-         handleReset();
-         return ;
+    console.log(values);
+    try {
+      let res = await fetch("/api/brands", {
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      await plist();
+      let data = await res.json();
+      if (data.status == true) {
+        showToast("Brand saved!", `"${values.name.trim()}" has been added to your catalog.`);
+        handleReset();
+        return;
       }
       showToast("Brand not saved!", `${data.message}`);
-
-  } catch (error:any) {
-    console.log(error.message)
-  }
-   
+    } catch (error: any) {
+      console.log(error.message);
+    }
   };
 
   const handleReset = () => {
@@ -652,51 +503,71 @@ export default function AddBrandPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const descLen = values.description.length;
+  const descLen  = values.description.length;
   const descOver = descLen > 500;
 
   // ── Render ────────────────────────────────────────────────────────────────
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-3 font-sans">
 
-      {/* ── MAIN ──────────────────────────────────────────────────────── */}
-      <main className="flex-1 max-w-[680px] mx-auto w-full px-5 pt-7 pb-20">
+      <div className="mx-auto max-w-2xl">
 
-        {/* Page header */}
-        <div className="flex items-start justify-between mb-5">
+        {/* ── Page header — matches Brands list page ── */}
+        <div className="mb-3 flex items-center justify-between">
           <div>
-            <h1 className="text-[21px] font-semibold text-slate-800 tracking-tight leading-tight">Add brand</h1>
-            <p className="mt-1 text-[12.5px] text-slate-500">Register a new brand and associate it with a manufacturer</p>
+            <h1 className="bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent">
+              Add Brand
+            </h1>
+            <p className="text-xs text-slate-500">BOXAIO — Register a new brand and associate it with a manufacturer</p>
           </div>
-          <p className="text-[11.5px] text-slate-400 flex items-center gap-1 mt-1 flex-shrink-0">
-            <span className="text-red-500 text-[13px] leading-none">*</span> Required
+          <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-1 flex-shrink-0">
+            <span className="text-emerald-500 text-sm leading-none">*</span> Required
           </p>
         </div>
 
-        {/* Progress bar */}
-        <div className="h-[3px] bg-slate-200 rounded-full mb-5 overflow-hidden" title={`${progress}% complete`}>
-          <div
-            className="h-full bg-blue-600 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+        {/* ── Progress bar — same stat-card style as Add Manufacturer ── */}
+        <div className="mb-3 rounded-lg border border-slate-200 bg-white p-2.5 shadow-sm">
+          <div className="flex items-center justify-between mb-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Form Completion</p>
+            <p className="text-[10px] font-bold text-emerald-600">{progress}%</p>
+          </div>
+          <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
 
-        {/* Form Card */}
-        <div className="relative bg-white border border-slate-200 rounded-xl px-7 py-6 overflow-hidden shadow-sm">
-          {/* Top accent line */}
-          <div className="absolute top-0 left-7 right-7 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
+        {/* ── Card ── */}
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
 
-          <div className="flex flex-col gap-5">
-            <SectionLabel>Brand information</SectionLabel>
+          {/* Card header — matches Brands edit modal header */}
+          <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-sm">
+              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-slate-800 tracking-tight">Brand Details</h2>
+              <p className="text-[10px] text-slate-400 font-medium">Fill in all required fields to register</p>
+            </div>
+          </div>
 
-            {/* ── Brand Name ──────────────────────────────────────────── */}
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel htmlFor="name" required>Brand name</FieldLabel>
+          {/* ── Form body ── */}
+          <div className="px-6 py-5 flex flex-col gap-4">
+            <SectionDivider label="Brand Information" />
+
+            {/* Brand Name */}
+            <div className="flex flex-col gap-1">
+              <FieldLabel required>Brand Name</FieldLabel>
               <div className="relative">
                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><TagIcon /></span>
                 <input
                   type="text"
-                  id="name"
                   placeholder="e.g. Dove, Lakmé, Head & Shoulders"
                   value={values.name}
                   onChange={handleChange("name")}
@@ -706,19 +577,18 @@ export default function AddBrandPage() {
                   autoComplete="off"
                   spellCheck={false}
                 />
-                <CheckIcon show={fieldState("name") === "ok"} />
+                <CheckMark show={fieldState("name") === "ok"} />
               </div>
               <FieldError message={touched.name ? errors.name : undefined} />
             </div>
 
-            {/* ── Brand Code ──────────────────────────────────────────── */}
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel htmlFor="brandCode" required>Brand Code</FieldLabel>
+            {/* Brand Code */}
+            <div className="flex flex-col gap-1">
+              <FieldLabel required>Brand Code</FieldLabel>
               <div className="relative">
                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><TagIcon /></span>
                 <input
                   type="text"
-                  id="brandCode"
                   placeholder="e.g. CP-HUL"
                   value={values.brandCode}
                   onChange={handleChange("brandCode")}
@@ -728,22 +598,20 @@ export default function AddBrandPage() {
                   autoComplete="off"
                   spellCheck={false}
                 />
-                <CheckIcon show={fieldState("brandCode") === "ok"} />
+                <CheckMark show={fieldState("brandCode") === "ok"} />
               </div>
               <FieldError message={touched.brandCode ? errors.brandCode : undefined} />
-            </div>            
+            </div>
 
-            {/* ── Brand Type + Manufacturer ────────────────────────────── */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* Brand Type */}
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel htmlFor="brandType" required>Brand type</FieldLabel>
+            {/* Brand Type + Manufacturer */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <FieldLabel required>Brand Type</FieldLabel>
                 <div className="relative">
                   <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><GridIcon /></span>
                   <input
                     type="text"
-                    id="brandType"
-                    placeholder="e.g. Hair Care, Electronics, Skin Care"
+                    placeholder="e.g. Hair Care, Electronics"
                     value={values.brandType}
                     onChange={handleChange("brandType")}
                     onBlur={handleBlur("brandType")}
@@ -752,102 +620,107 @@ export default function AddBrandPage() {
                     autoComplete="off"
                     spellCheck={false}
                   />
-                  <CheckIcon show={fieldState("brandType") === "ok"} />
+                  <CheckMark show={fieldState("brandType") === "ok"} />
                 </div>
                 <FieldError message={touched.brandType ? errors.brandType : undefined} />
               </div>
 
-              {/* Manufacturer */}
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel htmlFor="manufacturer" required>Manufacturer</FieldLabel>
+              <div className="flex flex-col gap-1">
+                <FieldLabel required>Manufacturer</FieldLabel>
                 <div className="relative">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><BuildingIcon /></span>
-                  <SelectField id="manufacturer" value={values.manufacturerId} onChange={handleChange("manufacturerId")} onBlur={handleBlur("manufacturerId")} state={fieldState("manufacturerId")} placeholder="Select manufacturer…">
-                     { brandList && 
-           brandList.map((e)=>{
-
-    return <option key={e.id} value={e.id}>{e.company_name}</option>
-   })
-}
-
-                  </SelectField>
-                  <CheckIcon show={fieldState("manufacturerId") === "ok"} />
+                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><BldgIcon /></span>
+                  <select
+                    value={values.manufacturerId}
+                    onChange={handleChange("manufacturerId")}
+                    onBlur={handleBlur("manufacturerId")}
+                    className={selectCls(fieldState("manufacturerId"))}
+                    style={{ backgroundImage: caretBg, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
+                  >
+                    <option value="">Select manufacturer…</option>
+                    {brandList && brandList.map((e) => (
+                      <option key={e.id} value={e.id}>{e.company_name}</option>
+                    ))}
+                  </select>
+                  <CheckMark show={fieldState("manufacturerId") === "ok"} />
                 </div>
                 <FieldError message={touched.manufacturerId ? errors.manufacturerId : undefined} />
               </div>
             </div>
 
-            {/* ── Parent Brand + Segment ────────────────────────────────── */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* Parent Brand */}
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel htmlFor="parentBrand" optional>Parent brand</FieldLabel>
+            {/* Parent Brand + Country */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <FieldLabel optional>Parent Brand</FieldLabel>
                 <div className="relative">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><ArrowUpIcon /></span>
-                  <SelectField id="parentBrand" value={values.parentBrand} onChange={handleChange("parentBrand")} onBlur={handleBlur("parentBrand")} state={fieldState("parentBrand")} placeholder="Select parentBrand">
-{ parentBrand && 
-   parentBrand.map((e)=>{
-
-    return <option key={e.id} value={e.id}>{e.name}</option>
-   })
-}                  </SelectField>
+                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><UpArrowIcon /></span>
+                  <select
+                    value={values.parentBrand}
+                    onChange={handleChange("parentBrand")}
+                    onBlur={handleBlur("parentBrand")}
+                    className={selectCls(fieldState("parentBrand"))}
+                    style={{ backgroundImage: caretBg, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
+                  >
+                    <option value="">Select parent brand</option>
+                    {parentBrand && parentBrand.map((e) => (
+                      <option key={e.id} value={e.id}>{e.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
-        <div className="flex flex-col gap-1.5">
-                 <FieldLabel htmlFor="country" optional>Country of origin</FieldLabel>
-              <div className="relative">
-                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><GlobeIcon /></span>
-                <SelectField id="country" value={values.country} onChange={handleChange("country")} onBlur={handleBlur("country")} state="">
-                  {COUNTRIES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </SelectField>
-              </div>
+
+              <div className="flex flex-col gap-1">
+                <FieldLabel optional>Country of Origin</FieldLabel>
+                <div className="relative">
+                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"><GlobeIcon /></span>
+                  <select
+                    value={values.country}
+                    onChange={handleChange("country")}
+                    onBlur={handleBlur("country")}
+                    className={selectCls("")}
+                    style={{ backgroundImage: caretBg, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
+                  >
+                    {COUNTRIES.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
-            {/* ── Country ──────────────────────────────────────────────── */}
-            
+            <SectionDivider label="Details & Assets" />
 
-            {/* ── Divider + Details section ─────────────────────────────── */}
-            <div className="h-px bg-slate-100 my-1" />
-            <SectionLabel>Details & assets</SectionLabel>
-
-            {/* ── Description ──────────────────────────────────────────── */}
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel htmlFor="description" optional>Description</FieldLabel>
+            {/* Description */}
+            <div className="flex flex-col gap-1">
+              <FieldLabel optional>Description</FieldLabel>
               <div className="relative">
-                <span className="absolute left-2.5 top-[11px] text-slate-300 pointer-events-none"><DocIcon /></span>
+                <span className="absolute left-2.5 top-2.5 text-slate-300 pointer-events-none"><DocIcon /></span>
                 <textarea
-                  id="description"
                   placeholder="Brief description of the brand, its positioning, values or target audience…"
                   value={values.description}
                   onChange={handleChange("description")}
                   onBlur={handleBlur("description")}
                   rows={3}
-                  className={
-                    inputCls(fieldState("description")).replace("py-[9px]", "pt-[10px] pb-7") +
-                    " resize-none leading-relaxed"
-                  }
+                  className={`${inputCls(fieldState("description")).replace("py-2", "pt-2 pb-6")} resize-none leading-relaxed`}
                   maxLength={520}
                 />
-                <span className={`absolute right-2.5 bottom-2.5 text-[10px] font-mono pointer-events-none ${descOver ? "text-red-500" : "text-slate-300"}`}>
+                <span className={`absolute right-2.5 bottom-2 text-[9px] font-mono pointer-events-none ${descOver ? "text-red-500" : "text-slate-300"}`}>
                   {descLen} / 500
                 </span>
               </div>
               <FieldError message={touched.description ? errors.description : undefined} />
             </div>
 
-            {/* ── Logo Upload ───────────────────────────────────────────── */}
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel optional>Brand logo</FieldLabel>
-
+            {/* Logo Upload */}
+            <div className="flex flex-col gap-1">
+              <FieldLabel optional>Brand Logo</FieldLabel>
               {!logoFile ? (
                 <div
-                  className={`relative border-[1.5px] border-dashed rounded-xl p-5 flex flex-col items-center gap-2 cursor-pointer transition-all duration-200 text-center
+                  className={`relative border-[1.5px] border-dashed rounded-xl p-4 flex flex-col items-center gap-2 cursor-pointer transition-all duration-200 text-center
                     ${isDragging
-                      ? "border-blue-400 bg-blue-50"
+                      ? "border-emerald-400 bg-emerald-50"
                       : errors.logo
-                        ? "border-red-400 bg-red-50"
-                        : "border-slate-200 bg-slate-50 hover:border-blue-300 hover:bg-blue-50"
+                        ? "border-red-300 bg-red-50"
+                        : "border-slate-200 bg-slate-50 hover:border-emerald-300 hover:bg-emerald-50/40"
                     }`}
                   onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                   onDragLeave={() => setIsDragging(false)}
@@ -865,31 +738,31 @@ export default function AddBrandPage() {
                     onChange={handleLogoChange}
                     className="hidden"
                   />
-                  <div className={`w-10 h-10 rounded-[9px] flex items-center justify-center border shadow-sm transition-all duration-200
-                    ${isDragging ? "bg-blue-100 border-blue-200 text-blue-500" : "bg-white border-slate-200 text-slate-400"}`}>
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center border shadow-sm transition-all duration-200
+                    ${isDragging ? "bg-emerald-100 border-emerald-200 text-emerald-500" : "bg-white border-slate-200 text-slate-400"}`}>
                     <UploadIcon />
                   </div>
-                  <p className="text-[12.5px] font-medium text-slate-600">
+                  <p className="text-[11px] font-medium text-slate-500">
                     {isDragging ? "Drop to upload" : "Click to upload or drag & drop"}
                   </p>
-                  <p className="text-[11px] text-slate-400">PNG, JPG, SVG, WEBP · Max 2 MB</p>
+                  <p className="text-[10px] text-slate-400">PNG, JPG, SVG, WEBP · Max 2 MB</p>
                 </div>
               ) : (
-                <div className="flex items-center gap-3 bg-white border border-emerald-400 rounded-xl p-3 ring-2 ring-emerald-400/10">
+                <div className="flex items-center gap-3 bg-white border border-emerald-400 rounded-xl p-2.5 ring-2 ring-emerald-400/10">
                   {logoPreviewUrl ? (
                     <img
                       src={logoPreviewUrl}
                       alt="Logo preview"
-                      className="w-10 h-10 rounded-lg object-contain border border-slate-100 bg-white flex-shrink-0"
+                      className="w-9 h-9 rounded-lg object-contain border border-slate-100 bg-white flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600 flex-shrink-0">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[10px] font-bold text-emerald-600 flex-shrink-0">
                       {logoFile.name.replace(/\.[^.]+$/, "").slice(0, 2).toUpperCase()}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[12.5px] font-medium text-slate-700 truncate">{logoFile.name}</p>
-                    <p className="text-[10.5px] text-slate-400 font-mono mt-0.5">
+                    <p className="text-[11px] font-medium text-slate-700 truncate">{logoFile.name}</p>
+                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">
                       {logoFile.size > 1024 * 1024
                         ? (logoFile.size / 1024 / 1024).toFixed(1) + " MB"
                         : Math.round(logoFile.size / 1024) + " KB"}
@@ -901,65 +774,70 @@ export default function AddBrandPage() {
                     aria-label="Remove logo"
                     className="w-6 h-6 rounded-md flex items-center justify-center text-slate-400 hover:bg-red-100 hover:text-red-600 transition-colors flex-shrink-0 border-none bg-transparent cursor-pointer"
                   >
-                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                       <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
                   </button>
                 </div>
               )}
-
               <FieldError message={touched.logo ? errors.logo : undefined} />
             </div>
 
-          </div>{/* /form-stack */}
+            {/* Status error strip */}
+            {statusMsg && (
+              <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-100 px-3 py-2.5">
+                <svg className="w-3.5 h-3.5 text-red-400 flex-shrink-0 mt-0.5" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                <p className="text-[10px] font-medium text-red-600 leading-relaxed">{statusMsg}</p>
+              </div>
+            )}
+          </div>
 
-          {/* ── Actions ─────────────────────────────────────────────── */}
-          <div className="flex items-center gap-2.5 mt-6 pt-5 border-t border-slate-100">
+          {/* ── Footer — matches modal footer pattern from Brands list ── */}
+          <div className="flex items-center justify-between px-6 py-3.5 border-t border-slate-100 bg-slate-50/80">
             <button
+              type="button"
+              onClick={handleReset}
+              disabled={loading}
+              className="text-xs font-semibold text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
               onClick={handleSubmit}
               disabled={loading}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[.99] disabled:opacity-50 disabled:cursor-not-allowed text-white 
-              md:font-medium md:text-[13.5px] md:px-6 md:py-[9px] font-small text-[9px] px-4 py-3
-              rounded-lg shadow-sm shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-px transition-all duration-150 border-none cursor-pointer"
+              className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all duration-200 shadow-sm
+                ${loading
+                  ? "bg-emerald-300 text-white cursor-not-allowed"
+                  : "bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 active:scale-95 shadow-emerald-200"
+                }`}
             >
               {loading ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin flex-shrink-0" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                  <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25"/>
+                    <path d="M12 2a10 10 0 0110 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                   </svg>
                   Saving…
                 </>
               ) : (
-                <><SaveIcon /> Save brand</>
+                <>
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/>
+                  </svg>
+                  Save Brand
+                </>
               )}
             </button>
-            <button
-              onClick={handleReset}
-              disabled={loading}
-              className="flex items-center gap-1.5 bg-transparent text-slate-500 hover:text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed font-normal text-[13.5px] px-5 py-[9px] rounded-lg transition-all duration-150 cursor-pointer"
-            >
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-              Cancel
-            </button>
           </div>
-        </div>{/* /card */}
+        </div>
+      </div>
 
-        {/* Status strip */}
-        {statusMsg && (
-          <div className="flex items-center gap-2 mt-4 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-[12px]" role="alert">
-            <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-            {statusMsg}
-          </div>
-        )}
-      </main>
-
-      {/* ── Toast ───────────────────────────────────────────────────── */}
+      {/* Toast */}
       {toast && <Toast title={toast.title} subtitle={toast.subtitle} />}
     </div>
   );

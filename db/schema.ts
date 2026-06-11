@@ -53,7 +53,8 @@ export const manufacturers = pgTable("manufacturers", {
   gstNumber: varchar("gst_number", { length: 50 }),
 
   address: text("address"),
-
+  status:boolean("status")
+  .default(true),
   createdAt: timestamp("created_at")
     .defaultNow()
     .notNull(),
@@ -86,7 +87,6 @@ export const brands = pgTable(
 
     parentBrandId: uuid("parent_brand_id")
     .references((): any => brands.id, {
-      onDelete: "set null"
     }),
     name: varchar("name", { length: 255 })
       .notNull(),
@@ -125,44 +125,7 @@ export const brands = pgTable(
 );
 
 
-// Products
-export const products = pgTable("products", {
-  id: uuid("id").defaultRandom().primaryKey(),
 
-  tenantId: uuid("tenant_id").notNull(),
-
-  brandId: uuid("brand_id")
-    .references(() => brands.id)
-    .notNull(),
-
-  name: varchar("name", { length: 255 }).notNull(),
-  subCategoryId: uuid("sub_category_id")
-  .references(() => subCategories.id)
-  .notNull(),
-  productCode: varchar("product_code", { length: 100 }),
-
-  description: text("description"),
-
-  launchDate: date("launch_date"),
-
-  status: boolean("status")
-    .default(true),
-
-  createdAt: timestamp("created_at")
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => new Date())
-      .notNull()
-  },
-(table) => [
-    unique("tenant_productcode_unique")
-      .on(table.tenantId, table.productCode),
-    unique("tenant_productName_unique")
-      .on(table.tenantId, table.name)
-  ]
-);
 
 export const industries = pgTable(
   "industries",
@@ -291,6 +254,43 @@ export const subCategories = pgTable(
       .on(table.tenantId, table.name)
   ]
 );
+export const products = pgTable("products", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  tenantId: uuid("tenant_id").notNull(),
+
+  brandId: uuid("brand_id")
+    .references(() => brands.id)
+    .notNull(),
+
+  name: varchar("name", { length: 255 }).notNull(),
+  subCategoryId: uuid("sub_category_id")
+  .references(() => subCategories.id)
+  .notNull(),
+  productCode: varchar("product_code", { length: 100 }),
+
+  description: text("description"),
+
+  launchDate: date("launch_date"),
+
+  status: boolean("status")
+    .default(true),
+
+  createdAt: timestamp("created_at")
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull()
+  },
+(table) => [
+    unique("tenant_productcode_unique")
+      .on(table.tenantId, table.productCode),
+    unique("tenant_productName_unique")
+      .on(table.tenantId, table.name)
+  ]
+);
 export const productVariants =
   pgTable(
     "product_variants",
@@ -304,7 +304,8 @@ export const productVariants =
         "product_id"
       )
         .references(
-          () => products.id
+          () => products.id,{
+          }
         )
         .notNull(),
 
@@ -348,7 +349,8 @@ export const productVariants =
     )
       .references(
         () =>
-          productVariants.id,
+          productVariants.id,{
+          }
       )
       .notNull(),
 
@@ -460,7 +462,8 @@ export const skuAttributeValues =
 
       skuId: uuid("sku_id")
         .references(
-          () => skus.id)
+          () => skus.id,{
+          })
         .notNull(),
 
       attributeId: uuid(
@@ -472,7 +475,8 @@ export const skuAttributeValues =
         .notNull(),
 
       value: text("value"),
-
+       status: boolean("status")
+      .default(true),
       createdAt: timestamp(
         "created_at"
       )

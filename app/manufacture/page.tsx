@@ -29,7 +29,6 @@ const INITIAL_VALUES: FormValues = {
 };
 
 // ─── VALIDATION ───────────────────────────────────────────────────────────────
-// Logic from user's code — messages & rules kept exactly as written
 
 function validateField(field: FieldName, value: string): string {
   const v = value.trim();
@@ -74,7 +73,7 @@ function hasErrors(errors: FormErrors): boolean {
   return Object.values(errors).some(Boolean);
 }
 
-// ─── PROGRESS HELPER ─────────────────────────────────────────────────────────
+// ─── PROGRESS HELPER ──────────────────────────────────────────────────────────
 
 function calcProgress(values: FormValues): number {
   let filled = 0;
@@ -84,93 +83,25 @@ function calcProgress(values: FormValues): number {
   return Math.min(100, Math.round((filled / 3) * 100));
 }
 
-// ─── ICON ────────────────────────────────────────────────────────────────────
-
-function Icon({
-  d,
-  size = 16,
-  sw = 1.7,
-  className = "",
-}: {
-  d: string[];
-  size?: number;
-  sw?: number;
-  className?: string;
-}) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={sw}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      {d.map((p, i) => (
-        <path key={i} d={p} />
-      ))}
-    </svg>
-  );
-}
-
-const ICONS = {
-  building: ["M3 21h18", "M9 21V7l6-4v18", "M9 11h6M9 15h6"],
-  hash: ["M4 9h16", "M4 15h16", "M10 3l-4 18", "M14 3l-4 18"],
-  mapPin: [
-    "M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z",
-    "M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0",
-  ],
-  save: [
-    "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z",
-    "M17 21v-8H7v8",
-    "M7 3v5h8",
-  ],
-  x: ["M18 6L6 18", "M6 6l12 12"],
-  check: ["M20 6L9 17l-5-5"],
-  alert: [
-    "M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z",
-    "M12 9v4",
-    "M12 17h.01",
-  ],
-  info: [
-    "M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z",
-    "M12 16v-4",
-    "M12 8h.01",
-  ],
-};
-
 // ─── FIELD WRAPPER ────────────────────────────────────────────────────────────
 
-interface FieldWrapperProps {
-  label: string;
-  required?: boolean;
-  hint?: string;
-  error?: string;
-  children: React.ReactNode;
-}
-
-function FieldWrapper({ label, required, hint, error, children }: FieldWrapperProps) {
+function FieldWrapper({
+  label, required, hint, error, children,
+}: {
+  label: string; required?: boolean; hint?: string;
+  error?: string; children: React.ReactNode;
+}) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider text-slate-500">
+    <div className="flex flex-col gap-1">
+      <label className="text-[10px] font-bold tracking-widest uppercase text-slate-400">
         {label}
-        {required && (
-          <span className="text-red-500 text-sm leading-none normal-case">*</span>
-        )}
+        {required && <span className="ml-1 text-emerald-500">*</span>}
       </label>
-
       {children}
-
-      {hint && !error && (
-        <p className="text-[11px] font-mono text-slate-400">{hint}</p>
-      )}
-
+      {hint && !error && <p className="text-[10px] text-slate-400 font-mono">{hint}</p>}
       {error && (
-        <p className="flex items-center gap-1.5 text-[11px] text-red-600 animate-in fade-in slide-in-from-top-1 duration-150">
-          <Icon d={ICONS.alert} size={12} />
+        <p className="flex items-center gap-1 text-[10px] text-red-500 font-medium">
+          <span className="flex-shrink-0 w-3 h-3 rounded-full border border-red-400 flex items-center justify-center text-[8px] font-bold leading-none">!</span>
           {error}
         </p>
       )}
@@ -182,12 +113,17 @@ function FieldWrapper({ label, required, hint, error, children }: FieldWrapperPr
 
 function Toast({ title, subtitle }: { title: string; subtitle: string }) {
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-start gap-3 bg-white border border-green-200 rounded-xl px-5 py-4 shadow-xl animate-in slide-in-from-bottom-3 fade-in duration-300">
-      <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0 text-green-600">
-        <Icon d={ICONS.check} size={15} sw={2.2} />
+    <div className="fixed bottom-6 right-6 z-50 flex items-start gap-3 bg-white border border-emerald-200 rounded-xl px-5 py-4 shadow-xl"
+      style={{ animation: "toastIn 0.25s ease-out" }}
+    >
+      <style>{`@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}`}</style>
+      <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0 text-emerald-600">
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
       </div>
       <div>
-        <p className="text-sm font-medium text-slate-800">{title}</p>
+        <p className="text-sm font-semibold text-slate-800">{title}</p>
         <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{subtitle}</p>
       </div>
     </div>
@@ -197,17 +133,17 @@ function Toast({ title, subtitle }: { title: string; subtitle: string }) {
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function AddManufacturerPage() {
-  const [values, setValues]     = useState<FormValues>(INITIAL_VALUES);
-  const [errors, setErrors]     = useState<FormErrors>({});
-  const [touched, setTouched]   = useState<Partial<Record<FieldName, boolean>>>({});
-  const [loading, setLoading]   = useState(false);
-  const [success, setSuccess]   = useState("");
-  const [toast, setToast]       = useState<{ title: string; subtitle: string } | null>(null);
+  const [values, setValues]       = useState<FormValues>(INITIAL_VALUES);
+  const [errors, setErrors]       = useState<FormErrors>({});
+  const [touched, setTouched]     = useState<Partial<Record<FieldName, boolean>>>({});
+  const [loading, setLoading]     = useState(false);
+  const [success, setSuccess]     = useState("");
+  const [toast, setToast]         = useState<{ title: string; subtitle: string } | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
 
   const progress = calcProgress(values);
 
-  // ── helpers ──────────────────────────────────────────────────────────────
+  // ── helpers ───────────────────────────────────────────────────────────────
 
   const showToast = (title: string, subtitle: string) => {
     setToast({ title, subtitle });
@@ -223,20 +159,17 @@ export default function AddManufacturerPage() {
 
   const inputCls = (field: FieldName, extra = ""): string => {
     const state = fieldState(field);
-    const base =
-      "w-full bg-slate-50 border rounded-lg text-sm text-slate-800 placeholder:text-slate-300 placeholder:text-[13px] outline-none transition-all duration-200 pl-10 pr-3 py-2.5 font-sans hover:bg-white hover:border-slate-300";
+    const base = "w-full bg-white border rounded-md px-3 py-2 text-xs placeholder-slate-300 text-slate-800 outline-none transition-all duration-200";
     const states: Record<string, string> = {
-      error: "border-red-400 ring-2 ring-red-400/10 bg-red-50 hover:bg-red-50",
-      ok:    "border-emerald-400 ring-2 ring-emerald-400/10 bg-white hover:bg-white",
-      "":    "border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 focus:bg-white",
+      error: "border-red-300 bg-red-50 focus:ring-2 focus:ring-red-200 focus:border-red-400",
+      ok:    "border-emerald-400 focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400",
+      "":    "border-slate-200 hover:border-slate-300 focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400",
     };
     return `${base} ${states[state] ?? states[""]} ${extra}`;
   };
 
-  // ── handlers (from user's code logic) ────────────────────────────────────
+  // ── handlers ─────────────────────────────────────────────────────────────
 
-  // onChange: clears that field's error immediately (user's pattern),
-  // plus auto-sanitise GST field
   const handleChange =
     (field: FieldName) =>
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -245,11 +178,9 @@ export default function AddManufacturerPage() {
         val = val.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 15);
       }
       setValues((prev) => ({ ...prev, [field]: val }));
-      // Clear error on change (user's code: setErrors prev [name]: "")
       setErrors((prev) => ({ ...prev, [field]: "" }));
     };
 
-  // onBlur: mark touched and run live validation
   const handleBlur =
     (field: FieldName) =>
     (_: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -260,12 +191,10 @@ export default function AddManufacturerPage() {
       }));
     };
 
-  // onSubmit: validate all, call API, handle success/failure (user's flow)
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSuccess("");
 
-    // Mark all touched for visual feedback
     setTouched({ companyName: true, gstNumber: true, address: true });
     const newErrors = validateAll(values);
     setErrors(newErrors);
@@ -279,7 +208,6 @@ export default function AddManufacturerPage() {
     setLoading(true);
 
     try {
-      // Simulate 1 s delay then POST (user's fetch logic)
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const res = await fetch("/api/manufacturer", {
@@ -302,8 +230,8 @@ export default function AddManufacturerPage() {
         );
         handleReset();
       }
-    } catch(error:any) {
-      console.log(error.messages)
+    } catch (error: any) {
+      console.log(error.messages);
       alert("Failed to save manufacturer");
     }
 
@@ -321,61 +249,77 @@ export default function AddManufacturerPage() {
   const addrLen = values.address.length;
 
   // ── render ────────────────────────────────────────────────────────────────
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-3 font-sans">
 
-      {/* ── MAIN ────────────────────────────────────────────────── */}
-      <main className="flex-1 max-w-[700px] mx-auto w-full px-6 pt-9 pb-20">
+      <div className="mx-auto max-w-2xl">
 
-        {/* Page header */}
-        <div className="flex items-start justify-between mb-7">
+        {/* Page header — matches Manufacturers list page */}
+        <div className="mb-3 flex items-center justify-between">
           <div>
-            <h1 className="text-[22px] font-medium text-slate-800 tracking-tight">Add manufacturer</h1>
-            <p className="mt-1.5 text-[13px] text-slate-500">
-              Register a new manufacturer in your product catalog
-            </p>
+            <h1 className="bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent">
+              Add Manufacturer
+            </h1>
+            <p className="text-xs text-slate-500">BOXAIO — Register a new manufacturer in your product catalog</p>
           </div>
-          <p className="text-xs text-slate-400 flex items-center gap-1 mt-1 flex-shrink-0">
-            <span className="text-red-500 text-sm leading-none">*</span> Required
+          <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-1 flex-shrink-0">
+            <span className="text-emerald-500 text-sm leading-none">*</span> Required
           </p>
         </div>
 
         {/* Progress bar */}
-        <div
-          className="h-[3px] bg-slate-200 rounded-full mb-7 overflow-hidden"
-          title={`${progress}% complete`}
-        >
-          <div
-            className="h-full bg-blue-500 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+        <div className="mb-3 rounded-lg border border-slate-200 bg-white p-2.5 shadow-sm">
+          <div className="flex items-center justify-between mb-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Form Completion</p>
+            <p className="text-[10px] font-bold text-emerald-600">{progress}%</p>
+          </div>
+          <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
 
         {/* Card */}
-        <div className="relative bg-white border border-slate-200 rounded-xl px-8 py-7 overflow-hidden">
-          {/* Top accent */}
-          <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
 
-          {/* Section label */}
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-[10px] font-medium uppercase tracking-widest text-slate-400">
-              Manufacturer details
-            </span>
-            <div className="flex-1 h-px bg-slate-100" />
+          {/* Card header */}
+          <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-sm">
+              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 21h18"/><path d="M9 21V7l6-4v18"/><path d="M9 11h6M9 15h6"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-slate-800 tracking-tight">Manufacturer Details</h2>
+              <p className="text-[10px] text-slate-400 font-medium">Fill in all required fields to register</p>
+            </div>
           </div>
 
+          {/* Form body */}
           <form onSubmit={handleSubmit} noValidate>
-            <div className="flex flex-col gap-5">
+            <div className="px-6 py-5 flex flex-col gap-5">
 
-              {/* ── Company Name ─────────────────────────────── */}
+              {/* Section divider */}
+              <div className="flex items-center gap-2">
+                <div className="h-px flex-1 bg-slate-100"/>
+                <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400 px-2">Company Information</span>
+                <div className="h-px flex-1 bg-slate-100"/>
+              </div>
+
+              {/* Company Name */}
               <FieldWrapper
-                label="Company name"
+                label="Company Name"
                 required
                 error={touched.companyName ? errors.companyName : undefined}
               >
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none">
-                    <Icon d={ICONS.building} size={15} />
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 21h18"/><path d="M9 21V7l6-4v18"/><path d="M9 11h6M9 15h6"/>
+                    </svg>
                   </span>
                   <input
                     type="text"
@@ -384,33 +328,33 @@ export default function AddManufacturerPage() {
                     value={values.companyName}
                     onChange={handleChange("companyName")}
                     onBlur={handleBlur("companyName")}
-                    className={inputCls("companyName")}
+                    className={inputCls("companyName", "pl-9 pr-8")}
                     maxLength={100}
                     autoComplete="organization"
                     spellCheck={false}
                   />
                   {fieldState("companyName") === "ok" && (
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500">
-                      <Icon d={ICONS.check} size={14} sw={2.2} />
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5"/>
+                      </svg>
                     </span>
                   )}
                 </div>
               </FieldWrapper>
 
-              {/* ── GST Number ───────────────────────────────── */}
+              {/* GST Number */}
               <FieldWrapper
-                label="GST number"
+                label="GST Number"
                 required
-                hint={
-                  values.gstNumber.length === 15
-                    ? undefined
-                    : "15-character alphanumeric GSTIN · e.g. 29ABCDE1234F1Z5"
-                }
+                hint={values.gstNumber.length === 15 ? undefined : "15-char alphanumeric GSTIN · e.g. 29ABCDE1234F1Z5"}
                 error={touched.gstNumber ? errors.gstNumber : undefined}
               >
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none">
-                    <Icon d={ICONS.hash} size={15} />
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 9h16M4 15h16M10 3l-4 18M14 3l-4 18"/>
+                    </svg>
                   </span>
                   <input
                     type="text"
@@ -419,27 +363,31 @@ export default function AddManufacturerPage() {
                     value={values.gstNumber}
                     onChange={handleChange("gstNumber")}
                     onBlur={handleBlur("gstNumber")}
-                    className={inputCls("gstNumber", "font-mono tracking-widest uppercase")}
+                    className={inputCls("gstNumber", "pl-9 pr-8 font-mono tracking-widest uppercase")}
                     maxLength={15}
                     spellCheck={false}
                   />
                   {fieldState("gstNumber") === "ok" && (
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500">
-                      <Icon d={ICONS.check} size={14} sw={2.2} />
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5"/>
+                      </svg>
                     </span>
                   )}
                 </div>
               </FieldWrapper>
 
-              {/* ── Address ──────────────────────────────────── */}
+              {/* Address */}
               <FieldWrapper
                 label="Address"
                 required
                 error={touched.address ? errors.address : undefined}
               >
                 <div className="relative">
-                  <span className="absolute left-3 top-3 text-slate-300 pointer-events-none">
-                    <Icon d={ICONS.mapPin} size={15} />
+                  <span className="absolute left-3 top-2.5 text-slate-300 pointer-events-none">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                    </svg>
                   </span>
                   <textarea
                     name="address"
@@ -448,11 +396,11 @@ export default function AddManufacturerPage() {
                     value={values.address}
                     onChange={handleChange("address")}
                     onBlur={handleBlur("address")}
-                    className={inputCls("address", "resize-none pt-2.5 pb-7 leading-relaxed")}
+                    className={inputCls("address", "pl-9 pr-3 resize-none pb-6 leading-relaxed")}
                     maxLength={270}
                   />
                   <span
-                    className={`absolute right-2.5 bottom-2.5 text-[10px] font-mono pointer-events-none ${
+                    className={`absolute right-2.5 bottom-2 text-[9px] font-mono pointer-events-none ${
                       addrLen > 250 ? "text-red-500" : "text-slate-300"
                     }`}
                   >
@@ -461,63 +409,73 @@ export default function AddManufacturerPage() {
                 </div>
               </FieldWrapper>
 
+              {/* Success banner */}
+              {success && (
+                <div className="flex items-center gap-2 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2.5">
+                  <svg className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M5 8.5l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <p className="text-[11px] font-semibold text-emerald-700">{success}</p>
+                </div>
+              )}
+
+              {/* Status error strip */}
+              {statusMsg && (
+                <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-100 px-3 py-2.5">
+                  <svg className="w-3.5 h-3.5 text-red-400 flex-shrink-0 mt-0.5" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  <p className="text-[10px] font-medium text-red-600 leading-relaxed">{statusMsg}</p>
+                </div>
+              )}
+
             </div>
 
-            {/* ── Success banner (user's pattern) ──────────── */}
-            {success && (
-              <div className="mt-5 bg-green-100 text-green-700 text-sm px-4 py-3 rounded-lg">
-                {success}
-              </div>
-            )}
-
-            {/* ── ACTIONS ──────────────────────────────────── */}
-            <div className="flex items-center gap-2.5 mt-7 pt-6 border-t border-slate-100">
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-[.99] disabled:opacity-50 disabled:cursor-not-allowed text-white
-                 md:font-medium md:text-[14px] md:px-6 md:py-2.5 font-small px-3 py-2 text-[8px]
-                rounded-lg shadow-sm shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-px transition-all duration-150"
-              >
-                {loading ? (
-                  <>
-                    <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                    </svg>
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Icon d={ICONS.save} size={15} />
-                    Save Manufacturer
-                  </>
-                )}
-              </button>
-
+            {/* Footer actions — matches modal footer pattern */}
+            <div className="flex items-center justify-between px-6 py-3.5 border-t border-slate-100 bg-slate-50/80">
               <button
                 type="button"
                 onClick={handleReset}
                 disabled={loading}
-                className="flex items-center gap-1.5 bg-transparent text-slate-500 hover:text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed font-normal text-[14px] px-5 py-2.5 rounded-lg transition-all duration-150"
+                className="text-xs font-semibold text-slate-400 hover:text-slate-600 transition-colors disabled:opacity-50"
               >
-                <Icon d={ICONS.x} size={13} sw={2} />
                 Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all duration-200 shadow-sm
+                  ${loading
+                    ? "bg-emerald-300 text-white cursor-not-allowed"
+                    : "bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 active:scale-95 shadow-emerald-200"
+                  }`}
+              >
+                {loading ? (
+                  <>
+                    <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.25"/>
+                      <path d="M12 2a10 10 0 0110 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    Saving…
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                      <path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/>
+                    </svg>
+                    Save Manufacturer
+                  </>
+                )}
               </button>
             </div>
           </form>
         </div>
+      </div>
 
-        {/* Status error strip */}
-        {statusMsg && (
-          <div className="flex items-center gap-2 mt-4 px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-xs">
-            <Icon d={ICONS.info} size={14} />
-            {statusMsg}
-          </div>
-        )}
-      </main>
-
-      {/* ── TOAST ───────────────────────────────────────────────── */}
+      {/* Toast */}
       {toast && <Toast title={toast.title} subtitle={toast.subtitle} />}
     </div>
   );

@@ -1,21 +1,35 @@
-import { NextRequest,NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/index";
-import {skuAttributeValues} from "@/db/schema";
-
+import { skuAttributeValues } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
 
-    const finalData = data.map((item: any) => ({
-      ...item,
-      tenantId: "11111111-0001-0001-0001-000000000001"
-    }));
-    await db.insert(skuAttributeValues).values(finalData);
+    for (const item of data) {
+      const restorePro = await db
+        .update(skuAttributeValues)
+        .set({ status: true })
+        .where(
+          and(
+            eq(skuAttributeValues.skuId, item.skuId),
+            eq(skuAttributeValues.attributeId, item.attributeId)
+          )
+        )
+        .returning();
+
+      if (restorePro.length === 0) {
+        await db.insert(skuAttributeValues).values({
+          ...item,
+          tenantId: "11111111-0001-0001-0001-000000000001",
+        });
+      }
+    }
 
     return NextResponse.json({
       status: true,
-      message: "Successfully inserted"
+      message: "Saved successfully",
     });
   } catch (error: any) {
     console.log(error);
@@ -23,7 +37,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         status: false,
-        message: error.message
+        message: error.message || "something went wrong",
       },
       { status: 500 }
     );
