@@ -10,18 +10,8 @@ interface resData {
 }
 export async function GET(req:NextRequest) {
     try {
-        let cached=await redis.get('brands')
-        if(cached)
-        {
-            console.log("from redis")
-             return NextResponse.json({
-            status:true,
-            message:"successfully fetch the data",
-            data:cached
-        },{status:200})
-        }
         let data:resData[]=await db.select({id:brands.id,name:brands.name}).from(brands) 
-         await redis.set('brands',JSON.stringify(data))
+         .where(eq(brands.status,true))
         return NextResponse.json({
             status:true,
             message:"successfully fetch the data",

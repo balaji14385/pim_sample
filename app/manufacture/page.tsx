@@ -221,7 +221,7 @@ export default function AddManufacturerPage() {
       });
 
       const data = await res.json();
-
+      console.log(data)
       if (data.status === true) {
         setSuccess("Manufacturer added successfully");
         showToast(
@@ -230,9 +230,14 @@ export default function AddManufacturerPage() {
         );
         handleReset();
       }
+       if(data.status === false)
+       {
+              showToast("Manufacturer not saved",data.message || "failed")
+
+       }
     } catch (error: any) {
-      console.log(error.messages);
-      alert("Failed to save manufacturer");
+      console.log(error.message);
+      showToast("Manufacturer not saved",error.message)
     }
 
     setLoading(false);

@@ -7,10 +7,10 @@ import { eq,and } from "drizzle-orm";
 export async function POST(req:NextRequest) {
     try {
         let data=await req.json()
-        
+        console.log(data)
         const restorePro = await db.update(manufacturers)
             .set({ status: true })
-            .where(and(eq(manufacturers.companyName, data.name),eq(manufacturers.gstNumber,data.gstNumber))).returning()
+            .where(and(eq(manufacturers.companyName, data.companyName),eq(manufacturers.gstNumber,data.gstNumber))).returning()
         let result
         if (restorePro.length === 0) {
             let finaldata = {
@@ -35,7 +35,22 @@ export async function POST(req:NextRequest) {
 
     } catch (error:any) {
         console.log(error)
-
+        const code=error.cause?.code || error.code
+        const constraint=error.cause?.constraint_name
+        if(code==='23505' && constraint==='tenant_company_unique')
+        {
+            return NextResponse.json({
+        status:false,
+        message:"the Name is already register for another Manufacturer"
+       },{status:409})    
+        }
+        if(code==='23505' && constraint==='tenant_gst_unique')
+        {
+            return NextResponse.json({
+        status:false,
+        message:"the GSTNumber is already register for another Manufacturer"
+       },{status:409})    
+        }
        return NextResponse.json({
         status:false,
         message:error.message || "Something went wrong" 

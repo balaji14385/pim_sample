@@ -71,7 +71,11 @@ export async function GET(req:NextRequest,context:Context) {
     data: brand,
   }, { status: 200 });
 }
-       
+        return NextResponse.json({
+    status: true,
+    message: "fetch successfully",
+    data
+        })
    } catch (error:any) {
       console.log(error)
 

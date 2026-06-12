@@ -1,11 +1,13 @@
 import { NextRequest,NextResponse } from "next/server";
 import { db } from "@/db/index";
 import { subCategories } from "@/db/schema";
-
+import { eq } from "drizzle-orm";
 
 export async function GET(req:NextRequest) {
     try {
-        let data=await db.select({id:subCategories.id,name:subCategories.name}).from(subCategories)       
+        let data=await db.select({id:subCategories.id,name:subCategories.name})
+        .from(subCategories)
+        .where(eq(subCategories.status,true))       
         return NextResponse.json({
             status:true,
             message:"successfully fetch the data",

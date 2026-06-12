@@ -343,13 +343,16 @@ const handleBlur = (field: FieldName) => () => {
     } else {
       showToast(
         "Category not saved!",
-        data.message || "Something went wrong"
+        data.message 
       );
     }
   } catch (error: any) {
     console.error(error);
-    alert("Failed to save category");
-  } finally {
+showToast(
+        "Category not saved!",
+        error.message 
+      );
+      } finally {
     setLoading(false);
   }
 };

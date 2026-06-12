@@ -1,4 +1,4 @@
-import { eq} from "drizzle-orm";
+import { and, eq} from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { industries,categories,subCategories} from "@/db/schema";
 import { db } from '@/db/index';
@@ -15,8 +15,9 @@ export async function GET() {
     industryName: industries.name
         }
       ).from(categories)
-      .leftJoin(subCategories,eq(subCategories.categoryId,categories.id))
-      .innerJoin(industries,eq(industries.id,categories.industryId))
+      .leftJoin(subCategories,and(eq(subCategories.categoryId,categories.id),eq(subCategories.status,true)) )
+      .innerJoin(industries,and(eq(industries.id,categories.industryId),eq(industries.status,true)))
+      .where(eq(categories.status,true))
        try {
                          await redis.set('registeredCategories',data)
                         } catch (redisError) {

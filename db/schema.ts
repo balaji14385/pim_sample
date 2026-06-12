@@ -146,7 +146,8 @@ export const industries = pgTable(
     }).notNull(),
 
     description: text("description"),
-
+    status: boolean("status")
+      .default(true),
     createdAt: timestamp("created_at")
       .defaultNow()
       .notNull(),
@@ -189,7 +190,8 @@ export const categories = pgTable(
     code: varchar("code", {
       length: 50
     }).notNull(),
-
+     status: boolean("status")
+      .default(true),
     imageUrl: text("image_url"),
 
     createdAt: timestamp("created_at")
@@ -235,7 +237,8 @@ export const subCategories = pgTable(
     code: varchar("code", {
       length: 50
     }).notNull(),
-
+  status: boolean("status")
+      .default(true),
     createdAt: timestamp("created_at")
       .defaultNow()
       .notNull(),

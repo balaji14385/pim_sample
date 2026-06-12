@@ -406,13 +406,19 @@ export default function AddCategoryPage() {
         );
         handleReset();
       }
-    showToast(
+     if(data.status===false)
+     {
+      showToast(
           "Category not saved!",
           `${data.message}`
         );
+     }
     } catch(error:any) {
       console.log(error.message)
-      alert("Failed to save category");
+       showToast(
+          "Category not saved!",
+          `${error.message}`
+        );
     }
     setLoading(false);
   };

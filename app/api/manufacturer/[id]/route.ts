@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import { manufacturers,brands } from "@/db/schema";
+import { manufacturers,brands, products, productVariants,skus,skuAttributeValues } from "@/db/schema";
 import { db } from '@/db/index';
 import { redis } from "@/lib/redis";
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) 
@@ -56,16 +56,120 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 try {
      const {id}=await params
-    const result=await db.transaction(async(tx)=>{
-       await tx.update(manufacturers)
-       .set({status:false})
-       .where(eq(manufacturers.id,id))
-       await tx.update(brands)
-       .set({status:false})
-       .where(eq(brands.manufacturerId,manufacturers.id))
-    })
+     console.log(id)     
+     const result = await db.transaction(async (tx) => {
+  await tx
+    .update(manufacturers)
+    .set({ status: false })
+    .where(eq(manufacturers.id, id));
+
+  await tx
+    .update(brands)
+    .set({ status: false })
+    .where(eq(brands.manufacturerId, id));
+
+  await tx
+    .update(products)
+    .set({ status: false })
+    .where(
+      inArray(
+        products.brandId,
+        tx
+          .select({ id: brands.id })
+          .from(brands)
+          .where(eq(brands.manufacturerId, id))
+      )
+    );
+
+  await tx
+    .update(productVariants)
+    .set({ status: false })
+    .where(
+      inArray(
+        productVariants.productId,
+        tx
+          .select({ id: products.id })
+          .from(products)
+          .where(
+            inArray(
+              products.brandId,
+              tx
+                .select({ id: brands.id })
+                .from(brands)
+                .where(eq(brands.manufacturerId, id))
+            )
+          )
+      )
+    );
+
+  await tx
+    .update(skus)
+    .set({ status: false })
+    .where(
+      inArray(
+        skus.variantId,
+        tx
+          .select({ id: productVariants.id })
+          .from(productVariants)
+          .where(
+            inArray(
+              productVariants.productId,
+              tx
+                .select({ id: products.id })
+                .from(products)
+                .where(
+                  inArray(
+                    products.brandId,
+                    tx
+                      .select({ id: brands.id })
+                      .from(brands)
+                      .where(eq(brands.manufacturerId, id))
+                  )
+                )
+            )
+          )
+      )
+    );
+
+  await tx
+    .update(skuAttributeValues)
+    .set({ status: false })
+    .where(
+      inArray(
+        skuAttributeValues.skuId,
+        tx
+          .select({ id: skus.id })
+          .from(skus)
+          .where(
+            inArray(
+              skus.variantId,
+              tx
+                .select({ id: productVariants.id })
+                .from(productVariants)
+                .where(
+                  inArray(
+                    productVariants.productId,
+                    tx
+                      .select({ id: products.id })
+                      .from(products)
+                      .where(
+                        inArray(
+                          products.brandId,
+                          tx
+                            .select({ id: brands.id })
+                            .from(brands)
+                            .where(eq(brands.manufacturerId, id))
+                        )
+                      )
+                  )
+                )
+            )
+          )
+      )
+    );
+})   
        try {
-                await redis.del('registeredProducts');
+                await redis.del('registeredManufacturer');
             } catch (redisError) {
                 console.error("Redis cache invalidation failed:", redisError);
             }

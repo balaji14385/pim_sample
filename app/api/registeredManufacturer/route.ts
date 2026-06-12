@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { and, countDistinct, eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { brands, manufacturers, products } from "@/db/schema";
 import { db } from '@/db/index';
@@ -16,10 +16,7 @@ export async function GET() {
 
     address: manufacturers.address,
 
-    brandCount: sql<number>`
-      count(${brands.manufacturerId})
-    `.as("brand_count"),
-
+    brandCount:countDistinct(brands.id) ,
     productName: products.name,
 
     createdAt: manufacturers.createdAt
@@ -29,12 +26,12 @@ export async function GET() {
   
   .leftJoin(
     brands,
-    sql`${brands.manufacturerId} = ${manufacturers.id}`
-  ).where(eq(brands.status,true))
-  
+    and(eq(brands.manufacturerId,manufacturers.id),
+  eq(brands.status,true))
+  )
   .leftJoin(
     products,
-    sql`${products.brandId} = ${brands.id}`
+    eq(products.brandId,brands.id)
   )
   
   .groupBy(
@@ -45,6 +42,7 @@ export async function GET() {
     manufacturers.createdAt,
     products.name
   )
+  .where(eq(manufacturers.status,true))
    try {
                   await redis.set('registeredManufacturer',data)
                  } catch (redisError) {

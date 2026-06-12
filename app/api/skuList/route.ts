@@ -1,7 +1,7 @@
 import { NextRequest,NextResponse } from "next/server";
 import { db } from "@/db/index";
 import { categories, products, productVariants,skus, subCategories } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 
 export async function GET(req:NextRequest) {
@@ -10,10 +10,11 @@ export async function GET(req:NextRequest) {
             code:skus.skuCode,category:categories.name,categoryId:categories.id
         }).
         from(skus)
-        .innerJoin(productVariants,eq(productVariants.id,skus.variantId))  
-        .innerJoin(products,eq(productVariants.productId,products.id))
-        .innerJoin(subCategories,eq(products.subCategoryId,subCategories.id))
-        .innerJoin(categories,eq(subCategories.categoryId,categories.id))     
+        .innerJoin(productVariants,and(eq(productVariants.id,skus.variantId),eq(productVariants.status,true))) 
+        .innerJoin(products,and(eq(productVariants.productId,products.id),eq(products.status,true)) )
+        .innerJoin(subCategories,and(eq(products.subCategoryId,subCategories.id),eq(subCategories.status,true)) )
+        .innerJoin(categories,and(eq(subCategories.categoryId,categories.id) ,eq(categories.status,true)))     
+        .where(eq(skus.status,true))
         return NextResponse.json({
             status:true,
             message:"successfully fetch the data",

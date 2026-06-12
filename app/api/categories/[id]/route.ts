@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import { categories } from "@/db/schema";
+import { categories,subCategories } from "@/db/schema";
 import { db } from '@/db/index';
 import { redis } from "@/lib/redis";
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) 
@@ -58,5 +58,33 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     status: false,
     message: error.message || "Something went wrong"
   }, { status: 500 });
+}
+}
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+try {
+     const {id}=await params
+    const result=await db.transaction(async(tx)=>{
+       await tx.update(categories).set({status:false})
+       .where(eq(categories.id,id))
+       await tx.update(subCategories).set({status:false})
+       .where(eq(subCategories.categoryId,id))
+    })
+       try {
+                await redis.del('registeredCategories');
+            } catch (redisError) {
+                console.error("Redis cache invalidation failed:", redisError);
+            }
+return NextResponse.json({
+            status: true,
+            message: "Successfully Deleted",
+            data:result
+        }, { status: 200 })
+} catch (error:any) {
+    console.log(error)
+
+        return NextResponse.json({
+            status: false,
+            message: error.message || "Something went wrong"
+        }, { status: 500 })
 }
 }
